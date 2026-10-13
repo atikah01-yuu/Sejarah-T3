@@ -1,3 +1,207 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kotak Misteri Sejarah Tingkatan 3</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#111827,#312e81,#581c87);
+  color:white;
+  min-height:100vh;
+  padding:18px;
+}
+.container{max-width:700px;margin:auto}
+.card{
+  background:#1e293b;
+  border:1px solid #475569;
+  border-radius:22px;
+  padding:24px;
+  margin:16px 0;
+  box-shadow:0 10px 30px #0004;
+}
+h1{font-size:30px;text-align:center;margin:10px 0}
+h2{text-align:center}
+.subtitle{text-align:center;color:#cbd5e1}
+button{
+  cursor:pointer;
+  border:0;
+  border-radius:14px;
+  padding:15px;
+  font-size:16px;
+  font-weight:bold;
+}
+.primary{
+  width:100%;
+  background:#facc15;
+  color:#1e1b4b;
+  margin-top:18px;
+}
+.primary:active,.answerbox:active{transform:scale(.98)}
+.hidden{display:none!important}
+.info{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:16px;
+}
+.info div{
+  background:#0f172a;
+  padding:12px 5px;
+  border-radius:12px;
+  text-align:center;
+}
+.info strong{display:block;color:#facc15;font-size:20px}
+.small{font-size:12px;color:#cbd5e1}
+#chapter{
+  display:inline-block;
+  background:#4338ca;
+  padding:8px 12px;
+  border-radius:20px;
+  font-size:13px;
+  margin-bottom:12px;
+}
+#question{font-size:21px;line-height:1.5}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:20px;
+}
+.answerbox{
+  min-height:110px;
+  background:#0f172a;
+  color:white;
+  border:2px solid #475569;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  overflow-wrap:anywhere;
+}
+.badge{
+  background:#4338ca;
+  padding:6px 11px;
+  border-radius:8px;
+}
+.answer{line-height:1.4}
+.answerbox:disabled{cursor:default}
+#feedback{
+  background:#0f172a;
+  border-radius:14px;
+  padding:15px;
+  margin-top:18px;
+  line-height:1.6;
+}
+#feedbackTitle{font-size:20px;font-weight:bold}
+#progressBar{
+  height:8px;
+  background:#475569;
+  border-radius:20px;
+  overflow:hidden;
+  margin:15px 0;
+}
+#progress{
+  height:100%;
+  width:0;
+  background:#facc15;
+  transition:width .3s;
+}
+#timer{color:#facc15}
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:20px;
+}
+.stats div{
+  background:#0f172a;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
+}
+.stats strong{
+  display:block;
+  font-size:28px;
+  color:#facc15;
+  margin-top:8px;
+}
+footer{text-align:center;color:#cbd5e1;font-size:12px;margin:25px 0}
+@media(max-width:380px){
+  body{padding:10px}
+  .card{padding:16px}
+  h1{font-size:25px}
+  #question{font-size:18px}
+  .answerbox{min-height:100px;font-size:14px;padding:10px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<section id="welcome" class="card">
+  <h1>📦 KOTAK MISTERI</h1>
+  <h2>SEJARAH TINGKATAN 3</h2>
+  <p class="subtitle">Cabaran Ulang Kaji Bab 1 hingga Bab 8</p>
+  <div class="card">
+    <p>🎯 Jawab 20 soalan objektif.</p>
+    <p>⏱️ Setiap soalan mempunyai masa 10 saat.</p>
+    <p>⭐ Kumpul markah dan bina streak jawapan betul.</p>
+    <p>🏆 Lihat keputusan pada akhir permainan.</p>
+  </div>
+  <button class="primary" onclick="startGame()">MULA PERMAINAN 🚀</button>
+</section>
+
+<section id="hud" class="info hidden">
+  <div><span class="small">MARKAH</span><strong id="score">0</strong></div>
+  <div><span class="small">STREAK</span><strong id="streak">0x</strong></div>
+  <div><span class="small">MASA</span><strong id="timer">10s</strong></div>
+</section>
+
+<section id="game" class="card hidden">
+  <div id="counter">Soalan 1 / 20</div>
+  <div id="progressBar"><div id="progress"></div></div>
+  <div id="chapter">Bab 1</div>
+  <h2 id="question"></h2>
+
+  <div class="grid">
+    <button class="answerbox"><span class="badge">A</span><span class="answer"></span></button>
+    <button class="answerbox"><span class="badge">B</span><span class="answer"></span></button>
+    <button class="answerbox"><span class="badge">C</span><span class="answer"></span></button>
+    <button class="answerbox"><span class="badge">D</span><span class="answer"></span></button>
+  </div>
+
+  <div id="feedback" class="hidden">
+    <div id="feedbackTitle"></div>
+    <div id="feedbackText"></div>
+    <button class="primary" onclick="nextQuestion()">SOALAN SETERUSNYA ➜</button>
+  </div>
+</section>
+
+<section id="result" class="card hidden">
+  <h1>🏆 TAMAT!</h1>
+  <h2>Keputusan Permainan</h2>
+  <div class="stats">
+    <div>Jumlah Markah<strong id="resScore">0</strong></div>
+    <div>Jawapan Betul<strong id="resCorrect">0/20</strong></div>
+    <div>Ketepatan<strong id="resAccuracy">0%</strong></div>
+    <div>Pencapaian<strong id="resGrade">-</strong></div>
+  </div>
+  <p id="resMessage" class="subtitle"></p>
+  <button class="primary" onclick="startGame()">MAIN SEMULA 🔄</button>
+  <button class="primary" onclick="home()" style="background:#cbd5e1">MENU UTAMA</button>
+</section>
+
+<footer>Permainan Ulang Kaji • Sejarah Tingkatan 3</footer>
+</div>
+
+<script>
 const bank = [
 {chapter:"Bab 1 • Kedatangan Kuasa Barat",q:"Apakah tarikan utama Tanah Melayu kepada kuasa Barat?",o:["Industri pelancongan","Kekayaan hasil bumi","Industri perfileman","Teknologi moden"],a:1,e:"Kuasa Barat tertarik kepada hasil bumi dan bahan mentah untuk kepentingan ekonomi."},
 {chapter:"Bab 1 • Kedatangan Kuasa Barat",q:"Mengapakah kuasa Barat bersaing mendapatkan tanah jajahan?",o:["Menguasai perdagangan","Menyebarkan sukan","Membina sekolah sahaja","Menghapuskan perdagangan"],a:0,e:"Tanah jajahan membantu kuasa Barat menguasai perdagangan dan kepentingan ekonomi."},
@@ -11,17 +215,18 @@ const bank = [
 {chapter:"Bab 5 • Pentadbiran Barat di Sarawak dan Sabah",q:"Syarikat manakah mentadbir Sabah pada akhir abad ke-19?",o:["Syarikat Hindia Timur Belanda","Syarikat Berpiagam Borneo Utara British","Syarikat Perdagangan Siam","Syarikat Hindia Timur Perancis"],a:1,e:"SBUB mentadbir Sabah selepas memperoleh piagam diraja British."},
 {chapter:"Bab 6 • Ekonomi dan Sosial",q:"Apakah contoh tanaman komersial yang berkembang di Tanah Melayu?",o:["Getah","Gandum","Barli","Kurma"],a:0,e:"Getah menjadi tanaman komersial penting dalam ekonomi eksport Tanah Melayu."},
 {chapter:"Bab 6 • Ekonomi dan Sosial",q:"Apakah kesan kemasukan buruh dari luar ke Tanah Melayu?",o:["Terbentuk masyarakat berbilang kaum","Institusi beraja dihapuskan","Perdagangan terhenti","Semua penduduk berpindah"],a:0,e:"Kemasukan buruh dari luar menyumbang kepada pembentukan masyarakat berbilang kaum."},
-{chapter:"Bab 6 • Ekonomi dan Sosial",q:"Apakah ciri pendidikan vernakular?",o:["Bahasa pengantar berbeza mengikut aliran sekolah","Semua sekolah guna bahasa yang sama","Semua murid belajar di sekolah Inggeris","Sekolah hanya mengajar perlombongan"],a:0,e:"Sekolah vernakular menggunakan bahasa pengantar mengikut aliran, seperti Melayu, Cina dan Tamil."},
+{chapter:"Bab 6 • Ekonomi dan Sosial",q:"Apakah ciri pendidikan vernakular?",o:["Bahasa pengantar berbeza mengikut aliran sekolah","Semua sekolah menggunakan bahasa yang sama","Semua murid belajar di sekolah Inggeris","Sekolah hanya mengajar perlombongan"],a:0,e:"Sekolah vernakular menggunakan bahasa pengantar mengikut aliran seperti Melayu, Cina dan Tamil."},
 {chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Siapakah tokoh yang menentang British di Pahang?",o:["Dato' Bahaman","Rentap","Mat Salleh","Tok Janggut"],a:0,e:"Dato' Bahaman mengetuai penentangan terhadap British di Pahang."},
 {chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Apakah antara sebab Tok Janggut menentang British?",o:["Pelaksanaan cukai dan peraturan baharu","Pembukaan sekolah baharu","Pembinaan pelabuhan","Perkembangan tanaman getah"],a:0,e:"Penentangan Tok Janggut berkait dengan pelaksanaan cukai dan peraturan British di Pasir Puteh."},
 {chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Siapakah tokoh yang menentang British di Terengganu?",o:["Haji Abdul Rahman Limbong","Dato' Maharaja Lela","Rentap","Dol Said"],a:0,e:"Haji Abdul Rahman Limbong menentang peraturan tanah British di Terengganu."},
-{chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Mengapakah Rentap menentang James Brooke?",o:["Campur tangan Brooke terhadap masyarakat Iban","Pembukaan lombong bijih timah","Pendidikan vernakular","Pembentukan NNMB"],a:0,e:"Rentap menentang peluasan kuasa Brooke dan tindakan terhadap masyarakat Iban."},
-{chapter:"Bab 8 • Cabaran Kuasa Barat",q:"Strategi apakah yang digunakan kuasa Barat untuk meluaskan pengaruh?",o:["Perjanjian dengan pemerintah tempatan","Menyerahkan semua kuasa","Menghentikan perdagangan","Menutup semua pelabuhan"],a:0,e:"Kuasa Barat menggunakan perjanjian dan tekanan politik untuk meluaskan pengaruh."},
+{chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Mengapakah Rentap menentang James Brooke?",o:["Campur tangan Brooke terhadap masyarakat Iban","Pembukaan lombong bijih timah","Pendidikan vernakular","Pembentukan NNMB"],a:0,e:"Rentap menentang peluasan kuasa Brooke dan tindakannya terhadap masyarakat Iban."},
+{chapter:"Bab 8 • Cabaran Kuasa Barat",q:"Apakah strategi yang digunakan kuasa Barat untuk meluaskan pengaruh?",o:["Perjanjian dengan pemerintah tempatan","Menyerahkan semua kuasa","Menghentikan perdagangan","Menutup semua pelabuhan"],a:0,e:"Kuasa Barat menggunakan perjanjian dan tekanan politik untuk meluaskan pengaruh."},
 {chapter:"Bab 8 • Perjanjian Bangkok 1909",q:"Perjanjian Bangkok 1909 melibatkan British dengan kuasa manakah?",o:["Belanda","Siam","Perancis","Portugis"],a:1,e:"Perjanjian Bangkok 1909 dimeterai antara British dengan Siam."},
-{chapter:"Bab 8 • Perjanjian Bangkok 1909",q:"Pasangan negeri manakah terlibat dalam pemindahan hak naungan Siam kepada British pada 1909?",o:["Perak dan Selangor","Johor dan Melaka","Kedah dan Kelantan","Sabah dan Sarawak"],a:2,e:"Perjanjian Bangkok 1909 memindahkan hak naungan Siam ke atas Kedah, Perlis, Kelantan dan Terengganu kepada British."}
+{chapter:"Bab 8 • Perjanjian Bangkok 1909",q:"Negeri manakah menerima kesan pemindahan hak naungan Siam kepada British pada tahun 1909?",o:["Perak dan Selangor","Johor dan Melaka","Kedah dan Kelantan","Sabah dan Sarawak"],a:2,e:"Perjanjian Bangkok 1909 melibatkan Kedah, Perlis, Kelantan dan Terengganu."}
 ];
 
 let idx=0,score=0,correct=0,streak=0,left=10,timerId=null,locked=false,order=[];
+
 const $=id=>document.getElementById(id);
 
 function shuffle(arr){
@@ -35,10 +240,7 @@ return a;
 
 function startGame(){
 clearInterval(timerId);
-idx=0;
-score=0;
-correct=0;
-streak=0;
+idx=0;score=0;correct=0;streak=0;
 $('welcome').classList.add('hidden');
 $('result').classList.add('hidden');
 $('game').classList.remove('hidden');
@@ -47,10 +249,7 @@ renderQuestion();
 }
 
 function renderQuestion(){
-if(idx>=bank.length){
-endGame();
-return;
-}
+if(idx>=bank.length){endGame();return;}
 
 locked=false;
 left=10;
@@ -59,14 +258,14 @@ const q=bank[idx];
 $('counter').textContent=`Soalan ${idx+1} / ${bank.length}`;
 $('chapter').textContent=q.chapter;
 $('question').textContent=q.q;
-$('progress').style.width=`${(idx/bank.length)*100}%`;
+$('progress').style.width=`${idx/bank.length*100}%`;
 $('feedback').classList.add('hidden');
 
 order=shuffle([0,1,2,3]);
 
 document.querySelectorAll('.answerbox').forEach((b,i)=>{
 b.disabled=false;
-b.className='answerbox min-h-32 md:min-h-40 rounded-2xl border-2 border-slate-700 bg-slate-900 hover:border-blue-400 hover:bg-slate-800 p-4 text-center flex flex-col items-center justify-center gap-2 transition';
+b.className='answerbox';
 b.querySelector('.badge').textContent='ABCD'[i];
 b.querySelector('.answer').textContent=q.o[order[i]];
 b.onclick=()=>choose(i);
@@ -77,11 +276,7 @@ updateHUD();
 timerId=setInterval(()=>{
 left--;
 updateTimer();
-
-if(left<=0){
-clearInterval(timerId);
-choose(null);
-}
+if(left<=0){clearInterval(timerId);choose(null);}
 },1000);
 }
 
@@ -93,12 +288,11 @@ updateTimer();
 
 function updateTimer(){
 $('timer').textContent=left+'s';
-$('timer').className='font-bold '+(left<=3?'text-red-400 animate-pulse':'text-amber-300');
+$('timer').style.color=left<=3?'#f87171':'#facc15';
 }
 
 function choose(boxIndex){
 if(locked)return;
-
 locked=true;
 clearInterval(timerId);
 
@@ -109,13 +303,14 @@ const isCorrect=chosen===q.a;
 
 document.querySelectorAll('.answerbox').forEach((b,i)=>{
 b.disabled=true;
-
 if(i===correctBox){
-b.classList.add('border-emerald-400','bg-emerald-950');
+b.style.borderColor='#34d399';
+b.style.background='#064e3b';
 }else if(i===boxIndex&&!isCorrect){
-b.classList.add('border-red-400','bg-red-950');
+b.style.borderColor='#f87171';
+b.style.background='#7f1d1d';
 }else{
-b.classList.add('opacity-50');
+b.style.opacity='.55';
 }
 });
 
@@ -124,16 +319,15 @@ correct++;
 streak++;
 score+=100+left*5+streak*10;
 $('feedbackTitle').textContent='✅ Betul!';
-$('feedbackTitle').className='text-xl font-extrabold text-emerald-300';
+$('feedbackTitle').style.color='#6ee7b7';
 }else{
 streak=0;
 $('feedbackTitle').textContent=boxIndex===null?'⏰ Masa tamat!':'❌ Belum tepat';
-$('feedbackTitle').className='text-xl font-extrabold text-red-300';
+$('feedbackTitle').style.color='#fca5a5';
 }
 
 $('feedbackText').textContent=`Jawapan: ${'ABCD'[correctBox]}. ${q.o[q.a]}. ${q.e}`;
 $('feedback').classList.remove('hidden');
-
 updateHUD();
 }
 
@@ -149,7 +343,16 @@ $('hud').classList.add('hidden');
 $('result').classList.remove('hidden');
 $('resScore').textContent=score;
 $('resCorrect').textContent=`${correct} / ${bank.length}`;
-$('resAccuracy').textContent=Math.round(correct/bank.length*100)+'%';
+const accuracy=Math.round(correct/bank.length*100);
+$('resAccuracy').textContent=accuracy+'%';
+
+let grade,message;
+if(accuracy>=80){grade='Cemerlang';message='Tahniah! Penguasaan Sejarah kamu sangat baik!';}
+else if(accuracy>=60){grade='Baik';message='Bagus! Teruskan ulang kaji untuk tingkatkan markah.';}
+else{grade='Perlu Usaha';message='Jangan putus asa. Cuba main lagi dan ulang kaji nota.';}
+
+$('resGrade').textContent=grade;
+$('resMessage').textContent=message;
 $('progress').style.width='100%';
 }
 
@@ -163,4 +366,3 @@ $('welcome').classList.remove('hidden');
 </script>
 </body>
 </html>
-    
