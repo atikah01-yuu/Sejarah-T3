@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kotak Misteri Sejarah Tingkatan 3</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MediaPipe Hands CDN scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+        }
+        .mirror-mode {
+            transform: scaleX(-1);
+        }
+        /* Custom animations for gift boxes */
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-bounce-gentle {
+            animation: bounce-gentle 2s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.9); }
+        }
+        .pulse-box {
+            animation: pulse-glow 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-between overflow-x-hidden">
+
+    <header class="w-full max-w-5xl px-4 py-4 flex items-center justify-between border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl shadow-lg shadow-blue-500/30">
+                <i class="fa-solid fa-box-open text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-white">Kotak Misteri Sejarah</h1>
+                <p class="text-xs text-slate-400">KSSM Tingkatan 3 (Bab 1 - 8)</p>
+            </div>
+        </div>
+        <div id="game-stats-header" class="hidden flex items-center space-x-4 text-sm">
+            <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2">
+                <i class="fa-solid fa-star text-amber-400"></i>
+                <span class="font-semibold text-white" id="score-display">0</span>
+            </div>
+            <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2">
+                <i class="fa-solid fa-fire text-orange-500"></i>
+                <span class="font-semibold text-white" id="streak-display">0x</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full max-w-4xl flex-1 flex flex-col items-center justify-center p-4 relative">
+        
+        <!-- Welcome Screen -->
+        <div id="screen-welcome" class="w-full max-w-xl bg-slate-800/90 border border-slate-700/80 p-8 rounded-2xl shadow-2xl backdrop-blur text-center space-y-6">
+            <div class="inline-flex p-4 bg-blue-600/20 text-blue-400 rounded-2xl border border-blue-500/30 text-4xl">
+                <i class="fa-solid fa-landmark"></i>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold text-white">Ulang Kaji Interaktif Sejarah T3</h2>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Uji minda anda dengan menjawab 20 soalan bab demi bab. Pilih kotak misteri menggunakan <span class="text-blue-400 font-medium">Kamera (Gerakan Jari Telunjuk)</span> atau <span class="text-indigo-400 font-medium">Tetikus/Sentuhan</span>!
+                </p>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="setControlMode('gesture')" id="btn-mode-gesture" class="p-3.5 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-300 font-semibold text-sm flex items-center justify-center space-x-2 transition shadow-lg">
+                    <i class="fa-solid fa-hand text-lg"></i>
+                    <span>Mod Gerakan Tangan</span>
+                </button>
+                <button onclick="setControlMode('touch')" id="btn-mode-touch" class="p-3.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-semibold text-sm flex items-center justify-center space-x-2 transition hover:bg-slate-700">
+                    <i class="fa-solid fa-hand-pointer text-lg"></i>
+                    <span>Mod Sentuh / Tetikus</span>
+                </button>
+            </div>
+
+            <div id="gesture-warning" class="text-xs text-amber-400/90 bg-amber-950/30 border border-amber-900/50 p-2.5 rounded-lg flex items-center space-x-2 text-left">
+                <i class="fa-solid fa-triangle-exclamation flex-shrink-0 text-amber-500"></i>
+                <span>Mod gerakan tangan memerlukan kebenaran kamera web dan pencahayaan yang cukup.</span>
+            </div>
+
+            <button onclick="startGame()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center justify-center space-x-2">
+                <span>Mula Bermain Sekarang</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="screen-game" class="w-full hidden flex flex-col items-center space-y-4">
+            
+            <!-- HUD / Progress Bar & Timer -->
+            <div class="w-full bg-slate-800/90 border border-slate-700/80 px-4 py-3 rounded-xl flex flex-col space-y-2 backdrop-blur">
+                <div class="flex justify-between items-center text-xs font-semibold text-slate-300">
+                    <span id="question-counter">Soalan 1 / 20</span>
+                    <span id="timer-text" class="text-amber-400 font-bold"><i class="fa-solid fa-clock mr-1"></i> 15s</span>
+                </div>
+                <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="w-full bg-slate-800/90 border border-slate-700/80 p-5 rounded-2xl shadow-xl backdrop-blur text-center space-y-2">
+                <span id="question-chapter" class="inline-block px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-semibold rounded-full">Bab 1</span>
+                <h3 id="question-text" class="text-lg md:text-xl font-bold text-white leading-snug">Soalan sejarah akan dipaparkan di sini...</h3>
+            </div>
+
+            <!-- Camera & Interactive Canvas Wrapper -->
+            <div id="game-viewport" class="relative w-full max-w-2xl aspect-video bg-black rounded-2xl overflow-hidden border border-slate-700 shadow-2xl flex items-center justify-center">
+                <!-- Video stream (hidden or mirrored for gesture) -->
+                <video id="webcam" class="absolute inset-0 w-full h-full object-cover mirror-mode opacity-60" autoplay playsinline muted></video>
+                <canvas id="output-canvas" class="absolute inset-0 w-full h-full object-cover mirror-mode pointer-events-none"></canvas>
+                
+                <!-- Hover/Gesture Cursor Indicator -->
+                <div id="cursor-indicator" class="absolute w-8 h-8 rounded-full border-2 border-amber-400 bg-amber-400/30 backdrop-blur-sm -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden z-30 transition-transform flex items-center justify-center">
+                    <div class="w-2 h-2 bg-amber-400 rounded-full"></div>
+                </div>
+                <!-- Hold Progress Ring overlay on cursor -->
+                <svg class="absolute w-12 h-12 -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden z-30" id="hold-ring-svg">
+                    <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.3)" stroke-width="4" fill="none"/>
+                    <circle id="hold-progress-circle" cx="24" cy="24" r="20" stroke="#3b82f6" stroke-width="4" fill="none" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" transform="rotate(-90 24 24)"/>
+                </svg>
+
+                <!-- 4 Mystery Boxes Grid Overlay -->
+                <div class="absolute inset-0 p-4 grid grid-cols-2 gap-4 z-20">
+                    <div id="box-0" onclick="selectBox(0)" class="mystery-box bg-slate-900/80 border-2 border-slate-600 hover:border-blue-500 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition transform hover:scale-[1.02] backdrop-blur relative overflow-hidden group shadow-lg">
+                        <div class="absolute top-2 left-2 w-7 h-7 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-xs font-bold text-slate-300 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-400 transition">A</div>
+                        <i class="fa-solid fa-gift text-3xl text-blue-400 mb-2 group-hover:scale-110 transition animate-bounce-gentle"></i>
+                        <span class="box-answer-text text-xs md:text-sm font-semibold text-slate-200">Pilihan A</span>
+                    </div>
+                    <div id="box-1" onclick="selectBox(1)" class="mystery-box bg-slate-900/80 border-2 border-slate-600 hover:border-blue-500 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition transform hover:scale-[1.02] backdrop-blur relative overflow-hidden group shadow-lg">
+                        <div class="absolute top-2 left-2 w-7 h-7 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-xs font-bold text-slate-300 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-400 transition">B</div>
+                        <i class="fa-solid fa-gift text-3xl text-indigo-400 mb-2 group-hover:scale-110 transition animate-bounce-gentle" style="animation-delay: 0.3s"></i>
+                        <span class="box-answer-text text-xs md:text-sm font-semibold text-slate-200">Pilihan B</span>
+                    </div>
+                    <div id="box-2" onclick="selectBox(2)" class="mystery-box bg-slate-900/80 border-2 border-slate-600 hover:border-blue-500 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition transform hover:scale-[1.02] backdrop-blur relative overflow-hidden group shadow-lg">
+                        <div class="absolute top-2 left-2 w-7 h-7 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-xs font-bold text-slate-300 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-400 transition">C</div>
+                        <i class="fa-solid fa-gift text-3xl text-purple-400 mb-2 group-hover:scale-110 transition animate-bounce-gentle" style="animation-delay: 0.6s"></i>
+                        <span class="box-answer-text text-xs md:text-sm font-semibold text-slate-200">Pilihan C</span>
+                    </div>
+                    <div id="box-3" onclick="selectBox(3)" class="mystery-box bg-slate-900/80 border-2 border-slate-600 hover:border-blue-500 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition transform hover:scale-[1.02] backdrop-blur relative overflow-hidden group shadow-lg">
+                        <div class="absolute top-2 left-2 w-7 h-7 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-xs font-bold text-slate-300 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-400 transition">D</div>
+                        <i class="fa-solid fa-gift text-3xl text-pink-400 mb-2 group-hover:scale-110 transition animate-bounce-gentle" style="animation-delay: 0.9s"></i>
+                        <span class="box-answer-text text-xs md:text-sm font-semibold text-slate-200">Pilihan D</span>
+                    </div>
+                </div>
+
+                <!-- Feedback Modal Overlay -->
+                <div id="feedback-overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-40 hidden flex flex-col items-center justify-center p-6 text-center space-y-4">
+                    <div id="feedback-icon" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-xl">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h3 id="feedback-title" class="text-2xl font-bold text-white">Tahniah!</h3>
+                    <p id="feedback-desc" class="text-slate-300 text-sm max-w-md leading-relaxed">Penerangan jawapan akan dipaparkan di sini.</p>
+                    <button onclick="nextQuestion()" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl shadow-lg transition transform active:scale-95 flex items-center space-x-2">
+                        <span>Soalan Seterusnya</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center text-xs text-slate-400 flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-circle-info text-blue-400"></i>
+                <span id="control-instruction">Tunjukkan jari telunjuk ke kotak dan kekalkan selama 1 saat untuk memilih.</span>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="screen-result" class="w-full max-w-lg bg-slate-800/90 border border-slate-700/80 p-8 rounded-2xl shadow-2xl backdrop-blur text-center space-y-6 hidden">
+            <div class="inline-flex p-4 bg-amber-500/20 text-amber-400 rounded-2xl border border-amber-500/30 text-4xl shadow-lg">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold text-white">Keputusan Permainan</h2>
+                <p class="text-slate-300 text-sm">Tahniah kerana berjaya menyelesaikan cabaran Kotak Misteri Sejarah!</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-slate-900/80 border border-slate-700 p-3.5 rounded-xl">
+                    <p class="text-xs text-slate-400 mb-1">Jumlah Markah</p>
+                    <p id="res-score" class="text-xl font-bold text-amber-400">0</p>
+                </div>
+                <div class="bg-slate-900/80 border border-slate-700 p-3.5 rounded-xl">
+                    <p class="text-xs text-slate-400 mb-1">Betul</p>
+                    <p id="res-correct" class="text-xl font-bold text-emerald-400">0 / 20</p>
+                </div>
+                <div class="bg-slate-900/80 border border-slate-700 p-3.5 rounded-xl">
+                    <p class="text-xs text-slate-400 mb-1">Ketepatan</p>
+                    <p id="res-accuracy" class="text-xl font-bold text-blue-400">0%</p>
+                </div>
+            </div>
+
+            <div class="flex space-x-3 pt-2">
+                <button onclick="restartGame()" class="flex-1 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Main Semula</span>
+                </button>
+                <button onclick="returnHome()" class="px-5 py-3.5 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Utama</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full max-w-5xl px-4 py-3 text-center text-xs text-slate-500 border-t border-slate-800/80">
+        Ulang Kaji Sejarah Tingkatan 3 KSSM • Pembelajaran Interaktif MediaPipe Hands
+    </footer>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'hover') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            }
+        }
+
+        const questionBank = [
+            {
+                chapter: "Bab 1: Kedatangan Kuasa Barat",
+                question: "Apakah faktor utama kedatangan kuasa Barat ke negara kita pada abad ke-16?",
+                options: ["Mencari pusat pelancongan", "Kekayaan hasil bumi dan rempah ratus", "Membina pangkalan ketenteraan global", "Menyebarkan teknologi moden"],
+                answer: 1,
+                explanation: "Kuasa Barat seperti Portugis, Belanda, dan British tertarik dengan kekayaan hasil bumi (seperti bijih timah) serta rempah ratus di Kepulauan Melayu."
+            },
+            {
+                chapter: "Bab 1: Kedatangan Kuasa Barat",
+                question: "Apakah strategi yang digunakan oleh British untuk menguasai Pulau Pinang daripada Sultan Kedah?",
+                options: ["Perjanjian kerjasama ketenteraan dan bantuan", "Serangan tentera secara langsung", "Pembelian mutlak wilayah", "Pemberontakan istana"],
+                answer: 0,
+                explanation: "Francis Light mendesak Sultan Kedah dengan menjanjikan bantuan ketenteraan British menentang Siam melalui Perjanjian Inggeris-Kedah 1786."
+            },
+            {
+                chapter: "Bab 1: Kedatangan Kuasa Barat",
+                question: "Syarikat Hindia Timur Inggeris (SHTI) memerlukan tapak pelabuhan strategik di Selat Melaka untuk...",
+                options: ["Menghalang kapal pedagang Belanda dan melindungi perdagangan", "Menubuhkan pusat pentadbiran Eropah", "Meneroka tanah pertanian kopi", "Menyatukan empayar Melayu"],
+                answer: 0,
+                explanation: "SHTI memerlukan pelabuhan persinggahan untuk membaiki kapal dan melindungi kapal dagang mereka daripada ancaman kuasa lain."
+            },
+            {
+                chapter: "Bab 2: Pentadbiran Negeri-Negeri Selat",
+                question: "Negeri-Negeri Selat (NNS) yang ditubuhkan oleh British pada tahun 1826 terdiri daripada...",
+                options: ["Pulau Pinang, Melaka dan Singapura", "Johor, Pahang dan Selangor", "Perak, Selangor dan Negeri Sembilan", "Kelantan, Terengganu dan Kedah"],
+                answer: 0,
+                explanation: "Negeri-Negeri Selat dibentuk pada 1826 menggabungkan Pulau Pinang, Melaka, dan Singapura di bawah satu pentadbiran."
+            },
+            {
+                chapter: "Bab 2: Pentadbiran Negeri-Negeri Selat",
+                question: "Siapakah Residen British pertama di Perak selepas Perjanjian Pangkor 1874?",
+                options: ["J.W.W. Birch", "Frank Swettenham", "Hugh Low", "W.H. Treacher"],
+                answer: 0,
+                explanation: "J.W.W. Birch telah dilantik sebagai Residen British pertama di Perak berikutan dimeterainya Perjanjian Pangkor pada tahun 1874."
+            },
+            {
+                chapter: "Bab 3: Pentadbiran Negeri-Negeri Melayu Bersekutu",
+                question: "Apakah nama gabungan yang dibentuk oleh British pada tahun 1896 melibatkan Perak, Selangor, Negeri Sembilan dan Pahang?",
+                options: ["Negeri-Negeri Melayu Bersekutu (NNMB)", "Negeri-Negeri Melayu Tidak Bersekutu", "Persekutuan Tanah Melayu", "Kesatuan Malaya"],
+                answer: 0,
+                explanation: "NNMB dibentuk pada 1896 bagi menyeragamkan pentadbiran, mengatasi masalah kewangan Pahang, dan memperkukuh kawalan ekonomi."
+            },
+            {
+                chapter: "Bab 3: Pentadbiran Negeri-Negeri Melayu Bersekutu",
+                question: "Pusat pentadbiran bagi Negeri-Negeri Melayu Bersekutu (NNMB) diketuai oleh seorang...",
+                options: ["Gabenor Jeneral", "Pesuruhjaya Tinggi British", "Residen Jeneral", "Sultan Melaka"],
+                answer: 2,
+                explanation: "NNMB diketuai oleh seorang Residen Jeneral yang berpusat di Kuala Lumpur, manakala Residen menjaga negeri masing-masing."
+            },
+            {
+                chapter: "Bab 4: Pentadbiran British di Sarawak dan Sabah",
+                question: "Siapakah individu yang melantik dirinya sebagai 'Rajah Putih' di Sarawak bermula tahun 1841?",
+                options: ["James Brooke", "Charles Brooke", "F.W. Burbidge", "W.H. Treacher"],
+                answer: 0,
+                explanation: "James Brooke berjaya menguasai sebahagian Sarawak dan dilantik sebagai Rajah Sarawak oleh Sultan Brunei."
+            },
+            {
+                chapter: "Bab 4: Pentadbiran British di Sarawak dan Sabah",
+                question: "Apakah sistem pentadbiran yang diperkenalkan oleh Syarikat Berpiagam Borneo Utara British (SBUB) di Sabah?",
+                options: ["Sistem Residen", "Sistem Pemerintahan Beraja mutlak", "Sistem Gabenor dan Ketua Anak Negeri", "Sistem Majlis Mesyuarat Negeri sahaja"],
+                answer: 2,
+                explanation: "SBUB memperkenalkan pentadbiran yang diketuai Gabenor serta melantik Ketua Anak Negeri (penggawa/imigran) untuk menguruskan pentadbiran tempatan."
+            },
+            {
+                chapter: "Bab 5: Pentadbiran British di Sarawak dan Sabah (Ekonomi)",
+                question: "Antara berikut, yang manakah hasil eksport utama Sabah semasa pemerintahan SBUB?",
+                options: ["Getah dan Tembakau", "Bijih timah dan emas", "Minyak sawit dan kelapa", "Lada hitam dan gambir"],
+                answer: 0,
+                explanation: "Getah dan tembakau merupakan tanaman komoditi eksport utama yang diusahakan secara besar-besaran di Sabah di bawah SBUB."
+            },
+            {
+                chapter: "Bab 6: Kesan Pentadbiran Barat terhadap Ekonomi",
+                question: "Apakah sistem ekonomi moden yang diperkenalkan oleh British di Tanah Melayu?",
+                options: ["Sistem sara diri semata-mata", "Sistem ekonomi komersial (getah dan bijih timah)", "Sistem tukaran barangan (barter)", "Sistem monopoli pelabuhan diraja"],
+                answer: 1,
+                explanation: "British memperkenalkan ekonomi komersial berorientasikan eksport tertumpu kepada penanaman getah dan perlombongan bijih timah."
+            },
+            {
+                chapter: "Bab 6: Kesan Pentadbiran Barat terhadap Ekonomi",
+                question: "Apakah kesan kemasukan buruh luar ke Tanah Melayu pada abad ke-19 dan ke-20?",
+                options: ["Pembentukan masyarakat berbilang kaum", "Kepupusan penduduk tempatan", "Pengurangan hasil bijih timah", "Pemansuhan sistem beraja"],
+                answer: 0,
+                explanation: "Kemasukan buruh dari China dan India telah mewujudkan masyarakat berbilang kaum di Tanah Melayu dengan penempatan dan pekerjaan yang berbeza."
+            },
+            {
+                chapter: "Bab 7: Penentangan Masyarakat Tempatan",
+                question: "Siapakah tokoh pahlawan tempatan yang menentang British di Pahang melalui perang gerila?",
+                options: ["Tok Janggut", "Mat Salleh", "Dato' Bahaman", "Rentap"],
+                answer: 2,
+                explanation: "Dato' Bahaman (Orang Kaya Semantan) mengetuai penentangan terhadap British di Pahang kerana hilang hak pengutipan cukai dan pembinaan balai polis."
+            },
+            {
+                chapter: "Bab 7: Penentangan Masyarakat Tempatan",
+                question: "Rentap merupakan pemimpin tempatan di Sarawak yang menentang pentadbiran James Brooke kerana...",
+                options: ["James Brooke menghapuskan amalan mengayau dan menganggap orang Iban sebagai lanun", "James Brooke menaikkan cukai tanah", "James Brooke mengambil alih takhta Kesultanan Brunei", "James Brooke membina jalan raya di pedalaman"],
+                answer: 0,
+                explanation: "Rentap menentang James Brooke kerana Brooke mencabar cara hidup tradisional masyarakat Iban dan melabelkan mereka sebagai lanun."
+            },
+            {
+                chapter: "Bab 7: Penentangan Masyarakat Tempatan",
+                question: "Di Kelantan, Tok Janggut bangkit menentang British pada tahun 1915 akibat bantahan terhadap...",
+                options: ["Pengenalan sistem cukai baharu yang membebankan", "Pelantikan Residen British di Kota Bharu", "Larangan beragama Islam", "Pemindahan ibu kota negeri"],
+                answer: 0,
+                explanation: "Tok Janggut menentang sistem cukai tanah dan peraturan baharu British yang menyusahkan penduduk tempatan di Pasir Puteh."
+            },
+            {
+                chapter: "Bab 8: Ketegangan & Perjanjian Bangkok 1909",
+                question: "Apakah intipati utama Perjanjian Bangkok 1909 yang ditandatangani antara British dengan Siam?",
+                options: ["Siam menyerahkan hak naungan ke atas Kedah, Perlis, Kelantan dan Terengganu kepada British", "British menyerahkan Pulau Pinang kepada Siam", "Pembahagian sempadan Sarawak dan Kalimantan", "Pengisytiharan Tanah Melayu bebas daripada Eropah"],
+                answer: 0,
+                explanation: "Melalui Perjanjian Bangkok 1909, Siam memindahkan hak naungan ke atas empat negeri utara Tanah Melayu kepada pihak British."
+            },
+            {
+                chapter: "Bab 3 & 8: Pentadbiran NNMTB",
+                question: "Negeri-Negeri Melayu Tidak Bersekutu (NNMTB) mempunyai kuasa autonomi yang lebih besar kerana...",
+                options: ["Pentadbiran diketuai oleh Penasihat British dan Sultan mengekalkan kuasa tertentu", "Mereka tidak mempunyai hasil bumi", "Mereka bergabung dengan Singapura", "Mereka dijajah oleh Belanda"],
+                answer: 0,
+                explanation: "NNMTB seperti Kedah, Perlis, Kelantan, Terengganu, dan Johor ditadbir dengan nasihat Penasihat British, membolehkan Sultan mempunyai lebih kuasa berbanding NNMB."
+            },
+            {
+                chapter: "Bab 6: Kesan Sosial",
+                question: "Sistem pendidikan vernakular yang diperkenalkan oleh British di Tanah Melayu bercirikan...",
+                options: ["Mengikut bahasa pengantar dan kurikulum mengikut kaum masing-masing", "Satu kurikulum kebangsaan yang seragam", "Pendidikan ala Barat untuk semua rakyat", "Sekolah teknikal moden percuma"],
+                answer: 0,
+                explanation: "Sistem pendidikan vernakular (Melayu, Cina, Tamil, dan Inggeris) mewujudkan sistem persekolahan terasing mengikut kaum."
+            },
+            {
+                chapter: "Bab 1 & 2: Pulau Pinang & Singapura",
+                question: "Siapakah tokoh yang berjaya memperolehi Singapura untuk SHTI pada tahun 1819?",
+                options: ["Sir Stamford Raffles", "William Farquhar", "Captain Francis Light", "Lord Minto"],
+                answer: 0,
+                explanation: "Sir Stamford Raffles memperdaya perebutan takhta Kesultanan Johor-Riau untuk menandatangani perjanjian pembukaan pelabuhan Singapura pada 1819."
+            },
+            {
+                chapter: "Bab 4 & 5: Sabah & Sarawak",
+                question: "Apakah nama badan pentadbiran yang ditubuhkan oleh SBUB untuk membantu Gabenor di Sabah?",
+                options: ["Majlis Penasihat (Advisory Council)", "Majlis Tertinggi Sarawak", "Dewan Rakyat Sabah", "Majlis Perundangan Persekutuan"],
+                answer: 0,
+                explanation: "SBUB menubuhkan Majlis Penasihat di Sabah untuk membantu Gabenor dalam urusan penggubalan undang-undang dan pentadbiran."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctCount = 0;
+        let streak = 0;
+        let timerInterval = null;
+        let timeLeft = 15;
+        let controlMode = 'gesture'; // 'gesture' or 'touch'
+        let isAnsweringLocked = false;
+
+        // MediaPipe Hands variables
+        let videoElement = document.getElementById('webcam');
+        let canvasElement = document.getElementById('output-canvas');
+        let canvasCtx = canvasElement.getContext('2d');
+        let handsInstance = null;
+        let cameraInstance = null;
+        let indexFingerHistory = { x: 0, y: 0, hoveringBox: null, holdStart: 0 };
+        const HOLD_DURATION = 1000; // 1 second hold
+
+        function setControlMode(mode) {
+            controlMode = mode;
+            playSound('hover');
+            const btnGesture = document.getElementById('btn-mode-gesture');
+            const btnTouch = document.getElementById('btn-mode-touch');
+            const warningBox = document.getElementById('gesture-warning');
+
+            if (mode === 'gesture') {
+                btnGesture.className = "p-3.5 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-300 font-semibold text-sm flex items-center justify-center space-x-2 transition shadow-lg";
+                btnTouch.className = "p-3.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-semibold text-sm flex items-center justify-center space-x-2 transition hover:bg-slate-700";
+                warningBox.classList.remove('hidden');
+            } else {
+                btnTouch.className = "p-3.5 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-300 font-semibold text-sm flex items-center justify-center space-x-2 transition shadow-lg";
+                btnGesture.className = "p-3.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-semibold text-sm flex items-center justify-center space-x-2 transition hover:bg-slate-700";
+                warningBox.classList.add('hidden');
+            }
+        }
+
+        function startGame() {
+            playSound('correct');
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('game-stats-header').classList.remove('hidden');
+
+            currentQuestionIndex = 0;
+            score = 0;
+            correctCount = 0;
+            streak = 0;
+
+            updateStatsDisplay();
+
+            if (controlMode === 'gesture') {
+                document.getElementById('cursor-indicator').classList.remove('hidden');
+                document.getElementById('hold-ring-svg').classList.remove('hidden');
+                document.getElementById('control-instruction').innerText = "Tunjukkan jari telunjuk ke kotak dan kekalkan selama 1 saat untuk memilih.";
+                initMediaPipe();
+            } else {
+                document.getElementById('cursor-indicator').classList.add('hidden');
+                document.getElementById('hold-ring-svg').classList.add('hidden');
+                document.getElementById('control-instruction').innerText = "Klik atau sentuh kotak pilihan jawapan di bawah.";
+                // stop webcam if running
+                if (cameraInstance) {
+                    cameraInstance.stop();
+                }
+            }
+
+            loadQuestion();
+        }
+
+        function initMediaPipe() {
+            if (handsInstance) return; // already initialized
+
+            handsInstance = new Hands({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            });
+
+            handsInstance.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.6,
+                minTrackingConfidence: 0.6
+            });
+
+            handsInstance.onResults(onHandResults);
+
+            cameraInstance = new Camera(videoElement, {
+                onFrame: async () => {
+                    if (controlMode === 'gesture' && !isAnsweringLocked) {
+                        await handsInstance.send({ image: videoElement });
+                    }
+                },
+                width: 640,
+                height: 360
+            });
+            cameraInstance.start().catch(err => {
+                console.warn("Kamera tidak dapat diakses, beralih ke mod sentuh.", err);
+                setControlMode('touch');
+            });
+        }
+
+        function onHandResults(results) {
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+            const cursorEl = document.getElementById('cursor-indicator');
+            const holdRingSvg = document.getElementById('hold-ring-svg');
+            const holdCircle = document.getElementById('hold-progress-circle');
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const landmarks = results.multiHandLandmarks[0];
+                // Index finger tip is landmark 8
+                const indexTip = landmarks[8];
+                const viewport = document.getElementById('game-viewport');
+                const rect = viewport.getBoundingClientRect();
+
+                // Because video is mirrored CSS scaleX(-1), map x accordingly
+                const x = (1 - indexTip.x) * rect.width;
+                const y = indexTip.y * rect.height;
+
+                cursorEl.style.left = `${x}px`;
+                cursorEl.style.top = `${y}px`;
+                holdRingSvg.style.left = `${x}px`;
+                holdRingSvg.style.top = `${y}px`;
+                cursorEl.classList.remove('hidden');
+                holdRingSvg.classList.remove('hidden');
+
+                // Check collision with any of the 4 boxes
+                let hoveredBoxIndex = null;
+                for (let i = 0; i < 4; i++) {
+                    const boxEl = document.getElementById(`box-${i}`);
+                    const bRect = boxEl.getBoundingClientRect();
+                    // convert box rect relative to viewport
+                    const relLeft = bRect.left - rect.left;
+                    const relTop = bRect.top - rect.top;
+                    const relRight = relLeft + bRect.width;
+                    const relBottom = relTop + bRect.height;
+
+                    if (x >= relLeft && x <= relRight && y >= relTop && y <= relBottom) {
+                        hoveredBoxIndex = i;
+                        break;
+                    }
+                }
+
+                const now = Date.now();
+                if (hoveredBoxIndex !== null) {
+                    if (indexFingerHistory.hoveringBox !== hoveredBoxIndex) {
+                        // New box hovered
+                        indexFingerHistory.hoveringBox = hoveredBoxIndex;
+                        indexFingerHistory.holdStart = now;
+                        playSound('hover');
+                    } else {
+                        // Holding same box
+                        const elapsed = now - indexFingerHistory.holdStart;
+                        const progress = Math.min(elapsed / HOLD_DURATION, 1);
+                        const dashOffset = 125.6 * (1 - progress);
+                        holdCircle.style.strokeDashoffset = dashOffset;
+
+                        // Highlight box visually
+                        for (let j = 0; j < 4; j++) {
+                            const b = document.getElementById(`box-${j}`);
+                            if (j === hoveredBoxIndex) {
+                                b.classList.add('border-blue-400', 'bg-blue-950/50', 'scale-[1.02]');
+                            } else {
+                                b.classList.remove('border-blue-400', 'bg-blue-950/50', 'scale-[1.02]');
+                            }
+                        }
+
+                        if (elapsed >= HOLD_DURATION) {
+                            // Trigger selection!
+                            indexFingerHistory.hoveringBox = null;
+                            cursorEl.classList.add('hidden');
+                            holdRingSvg.classList.add('hidden');
+                            selectBox(hoveredBoxIndex);
+                        }
+                    }
+                } else {
+                    // Not hovering any box
+                    indexFingerHistory.hoveringBox = null;
+                    indexFingerHistory.holdStart = now;
+                    holdCircle.style.strokeDashoffset = 125.6;
+                    for (let j = 0; j < 4; j++) {
+                        document.getElementById(`box-${j}`).classList.remove('border-blue-400', 'bg-blue-950/50', 'scale-[1.02]');
+                    }
+                }
+
+            } else {
+                cursorEl.classList.add('hidden');
+                holdRingSvg.classList.add('hidden');
+                indexFingerHistory.hoveringBox = null;
+            }
+
+            canvasCtx.restore();
+        }
+
+        let currentOptionsMap = []; // maps box index to original option index
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questionBank.length) {
+                endGame();
+                return;
+            }
+
+            isAnsweringLocked = false;
+            document.getElementById('feedback-overlay').classList.add('hidden');
+
+            const q = questionBank[currentQuestionIndex];
+            document.getElementById('question-counter').innerText = `Soalan ${currentQuestionIndex + 1} / ${questionBank.length}`;
+            document.getElementById('question-chapter').innerText = q.chapter;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Update progress bar
+            const progressPercent = ((currentQuestionIndex) / questionBank.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // Prepare options (shuffle indices to keep mystery engaging)
+            let indices = [0, 1, 2, 3];
+            // shuffle indices
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            currentOptionsMap = indices;
+
+            for (let i = 0; i < 4; i++) {
+                const origIndex = indices[i];
+                const boxEl = document.getElementById(`box-${i}`);
+                boxEl.className = "mystery-box bg-slate-900/80 border-2 border-slate-600 hover:border-blue-500 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition transform hover:scale-[1.02] backdrop-blur relative overflow-hidden group shadow-lg";
+                boxEl.querySelector('.box-answer-text').innerText = q.options[origIndex];
+            }
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 15;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerEl = document.getElementById('timer-text');
+            timerEl.innerHTML = `<i class="fa-solid fa-clock mr-1"></i> ${timeLeft}s`;
+            if (timeLeft <= 5) {
+                timerEl.classList.add('text-red-400', 'animate-pulse');
+            } else {
+                timerEl.classList.remove('text-red-400', 'animate-pulse');
+            }
+        }
+
+        function handleTimeOut() {
+            if (isAnsweringLocked) return;
+            isAnsweringLocked = true;
+            streak = 0;
+            updateStatsDisplay();
+
+            const q = questionBank[currentQuestionIndex];
+            const correctOrigIndex = q.answer;
+            // Find which box holds correctOrigIndex
+            let correctBoxIdx = currentOptionsMap.indexOf(correctOrigIndex);
+
+            // Highlight correct box
+            for (let i = 0; i < 4; i++) {
+                const b = document.getElementById(`box-${i}`);
+                if (i === correctBoxIdx) {
+                    b.className = "mystery-box bg-emerald-950/80 border-2 border-emerald-500 rounded-xl p-4 flex flex-col items-center justify-center text-center backdrop-blur relative overflow-hidden shadow-lg animate-bounce-gentle";
+                } else {
+                    b.className = "mystery-box bg-slate-900/40 border-2 border-slate-800 opacity-50 rounded-xl p-4 flex flex-col items-center justify-center text-center backdrop-blur relative overflow-hidden";
+                }
+            }
+
+            playSound('wrong');
+            showFeedback(false, "Masa tamat! Anda lambat menjawab.", q.explanation);
+        }
+
+        function selectBox(boxIdx) {
+            if (isAnsweringLocked) return;
+            isAnsweringLocked = true;
+            clearInterval(timerInterval);
+
+            const q = questionBank[currentQuestionIndex];
+            const chosenOrigIndex = currentOptionsMap[boxIdx];
+            const isCorrect = (chosenOrigIndex === q.answer);
+
+            const correctOrigIndex = q.answer;
+            let correctBoxIdx = currentOptionsMap.indexOf(correctOrigIndex);
+
+            // Visual box animation
+            for (let i = 0; i < 4; i++) {
+                const b = document.getElementById(`box-${i}`);
+                if (i === correctBoxIdx) {
+                    b.className = "mystery-box bg-emerald-950/80 border-2 border-emerald-500 rounded-xl p-4 flex flex-col items-center justify-center text-center backdrop-blur relative overflow-hidden shadow-lg scale-105 transition";
+                    b.innerHTML = `<div class="absolute top-2 left-2 w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-check"></i></div><i class="fa-solid fa-face-smile-beam text-3xl text-emerald-400 mb-2 animate-bounce"></i><span class="text-xs md:text-sm font-bold text-emerald-200">${q.options[q.answer]}</span>`;
+                } else if (i === boxIdx && !isCorrect) {
+                    b.className = "mystery-box bg-red-950/80 border-2 border-red-500 rounded-xl p-4 flex flex-col items-center justify-center text-center backdrop-blur relative overflow-hidden shadow-lg opacity-80";
+                    b.innerHTML = `<div class="absolute top-2 left-2 w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-xmark"></i></div><i class="fa-solid fa-face-frown text-3xl text-red-400 mb-2"></i><span class="text-xs md:text-sm font-semibold text-red-200">${q.options[chosenOrigIndex]}</span>`;
+                } else {
+                    b.className = "mystery-box bg-slate-900/40 border-2 border-slate-800 opacity-40 rounded-xl p-4 flex flex-col items-center justify-center text-center backdrop-blur relative overflow-hidden";
+                }
+            }
+
+            if (isCorrect) {
+                correctCount++;
+                streak++;
+                // Score based on time left (speed bonus)
+                let pts = 100 + (timeLeft * 5) + (streak * 10);
+                score += pts;
+                playSound('correct');
+                showFeedback(true, "Tahniah! Kotak Misteri Membawa Rezeki!", q.explanation);
+            } else {
+                streak = 0;
+                playSound('wrong');
+                showFeedback(false, "Kurang Tepat! Jangan Putus Asa.", q.explanation);
+            }
+
+            updateStatsDisplay();
+        }
+
+        function showFeedback(isCorrect, title, explanation) {
+            const overlay = document.getElementById('feedback-overlay');
+            const iconDiv = document.getElementById('feedback-icon');
+            const titleEl = document.getElementById('feedback-title');
+            const descEl = document.getElementById('feedback-desc');
+
+            if (isCorrect) {
+                iconDiv.className = "w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-3xl shadow-xl";
+                iconDiv.innerHTML = '<i class="fa-solid fa-gift"></i>';
+                titleEl.className = "text-2xl font-bold text-emerald-400";
+            } else {
+                iconDiv.className = "w-16 h-16 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-3xl shadow-xl";
+                iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                titleEl.className = "text-2xl font-bold text-red-400";
+            }
+
+            titleEl.innerText = title;
+            descEl.innerHTML = `<strong class="text-white block mb-1">Penerangan:</strong> ${explanation}`;
+            overlay.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            playSound('hover');
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('streak-display').innerText = `${streak}x`;
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            if (cameraInstance) {
+                cameraInstance.stop();
+            }
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('game-stats-header').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            const accuracy = Math.round((correctCount / questionBank.length) * 100);
+
+            document.getElementById('res-score').innerText = score;
+            document.getElementById('res-correct').innerText = `${correctCount} / ${questionBank.length}`;
+            document.getElementById('res-accuracy').innerText = `${accuracy}%`;
+
+            playSound('correct');
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function returnHome() {
+            if (cameraInstance) {
+                cameraInstance.stop();
+            }
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('game-stats-header').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
