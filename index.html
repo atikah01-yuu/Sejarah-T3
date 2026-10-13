@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Kotak Misteri Sejarah Tingkatan 3</title>
 
 <style>
@@ -10,57 +11,94 @@
   box-sizing: border-box;
 }
 
+:root {
+  --gold: #ffe66d;
+  --purple: #a78bfa;
+  --dark: #170d32;
+  --white: #ffffff;
+  --green: #86efac;
+  --red: #fda4af;
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #160b35, #34206d, #111827);
-  color: white;
   min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: var(--white);
+  background:
+    radial-gradient(circle at top left, #59319b, transparent 45%),
+    linear-gradient(135deg, #120923, #251044, #10172f);
 }
 
 button {
-  cursor: pointer;
-  border: none;
-  font-weight: bold;
-  border-radius: 12px;
-  padding: 12px 20px;
   font-size: 16px;
+  font-weight: bold;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
 button:hover {
-  transform: scale(1.03);
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.primary {
+  color: #24113e;
+  background: var(--gold);
+}
+
+.secondary {
+  color: #24113e;
+  background: var(--purple);
+}
+
+.danger {
+  color: #450a0a;
+  background: var(--red);
+}
+
+.hidden {
+  display: none !important;
 }
 
 .wrap {
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1050px;
   margin: auto;
-  padding: 20px;
+  padding: 16px;
 }
 
 header {
   text-align: center;
-  padding: 20px 10px;
+  padding: 18px 5px;
 }
 
 header h1 {
-  font-size: clamp(28px, 5vw, 48px);
-  margin-bottom: 10px;
-  color: #ffe66d;
-  text-shadow: 2px 3px 0 #6b21a8;
+  color: var(--gold);
+  font-size: clamp(28px, 6vw, 48px);
+  margin: 8px 0;
+  text-shadow: 0 4px 0 #6336a0;
 }
 
 header p {
   color: #e9d5ff;
-  font-size: 16px;
+  line-height: 1.6;
 }
 
 .panel {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 20px;
-  padding: 24px;
   margin: 18px 0;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 22px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.22);
 }
 
 #startScreen {
@@ -68,47 +106,47 @@ header p {
 }
 
 .mystery-icon {
-  font-size: 100px;
-  margin: 20px 0;
-  animation: float 2s infinite ease-in-out;
+  font-size: 90px;
+  margin: 18px 0;
+  animation: float 2s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.primary {
-  background: #ffe66d;
-  color: #241044;
+.instructions {
+  max-width: 620px;
+  margin: 20px auto;
+  text-align: left;
+  line-height: 1.9;
+  background: rgba(0,0,0,0.18);
+  padding: 18px;
+  border-radius: 15px;
 }
 
-.secondary {
-  background: #a78bfa;
-  color: #1e1040;
-}
-
-.danger {
-  background: #fb7185;
-  color: #450a0a;
-}
-
-.hidden {
-  display: none !important;
+.instructions li {
+  margin: 6px 0;
 }
 
 .hud {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 15px;
 }
 
 .stat {
-  background: rgba(255,255,255,0.12);
-  border-radius: 14px;
   text-align: center;
-  padding: 12px 5px;
+  padding: 13px 5px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
 }
 
 .stat-label {
@@ -117,16 +155,16 @@ header p {
 }
 
 .stat-value {
-  font-size: 24px;
+  color: var(--gold);
+  font-size: 25px;
   font-weight: bold;
-  margin-top: 5px;
-  color: #ffe66d;
+  margin-top: 7px;
 }
 
 .progress-track {
   height: 10px;
-  background: rgba(255,255,255,0.15);
   border-radius: 20px;
+  background: rgba(255,255,255,0.15);
   overflow: hidden;
   margin: 12px 0 20px;
 }
@@ -140,69 +178,95 @@ header p {
 
 .question-box {
   text-align: center;
-  padding: 20px 10px;
 }
 
 #questionNumber {
-  color: #c4b5fd;
+  color: var(--purple);
   font-weight: bold;
+  letter-spacing: 1px;
 }
 
 #questionText {
-  font-size: clamp(20px, 4vw, 30px);
+  font-size: clamp(21px, 4vw, 30px);
   line-height: 1.5;
-  margin: 20px 0;
+  margin: 22px 0;
 }
 
 .answers {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
 }
 
-.answer-btn {
-  background: #f5f3ff;
-  color: #251447;
+.answer {
+  min-height: 90px;
+  padding: 16px;
   text-align: left;
-  min-height: 75px;
-  line-height: 1.4;
+  color: #251447;
+  background: #f5f3ff;
   border: 3px solid transparent;
+  border-radius: 16px;
+  line-height: 1.5;
+  font-size: 16px;
 }
 
-.answer-btn.correct {
+.answer .letter {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #ddd6fe;
+  font-weight: bold;
+}
+
+.answer.selected {
+  border-color: #facc15;
+  box-shadow: 0 0 0 3px rgba(250,204,21,0.2);
+}
+
+.answer.correct {
   background: #bbf7d0;
   border-color: #22c55e;
 }
 
-.answer-btn.wrong {
+.answer.wrong {
   background: #fecdd3;
   border-color: #f43f5e;
 }
 
-.answer-btn:disabled {
-  cursor: default;
-  opacity: 1;
-}
-
 .feedback {
-  padding: 15px;
-  border-radius: 12px;
-  margin-top: 18px;
-  line-height: 1.5;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 14px;
   background: rgba(255,255,255,0.1);
+  line-height: 1.7;
+  text-align: left;
 }
 
 #nextBtn {
-  margin-top: 15px;
+  margin-top: 18px;
+}
+
+.camera-panel h2 {
+  color: var(--gold);
 }
 
 .camera-panel {
   text-align: center;
 }
 
-.camera-panel h3 {
-  color: #ffe66d;
+.camera-instructions {
+  text-align: left;
+  max-width: 650px;
+  margin: 15px auto;
+  padding: 15px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.18);
+  line-height: 1.8;
 }
 
 #cameraVideo {
@@ -211,55 +275,91 @@ header p {
 
 #cameraCanvas {
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
+  min-height: 180px;
   border-radius: 16px;
-  background: #09051a;
-  margin-top: 10px;
+  background: #080414;
+  border: 2px solid rgba(255,255,255,0.15);
+  margin-top: 12px;
 }
 
-.camera-status {
-  font-size: 14px;
+#handStatus {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.2);
   color: #ddd6fe;
   line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.camera-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+#cursor {
+  display: none;
+  position: fixed;
+  z-index: 99999;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 4px solid white;
+  background: #facc15;
+  box-shadow: 0 0 0 5px rgba(250,204,21,0.3);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+#resultScreen {
+  text-align: center;
 }
 
 .result-score {
-  font-size: 60px;
+  font-size: clamp(45px, 10vw, 70px);
+  color: var(--gold);
   font-weight: bold;
-  color: #ffe66d;
-  text-align: center;
+  margin: 20px 0;
 }
 
 .result-message {
-  text-align: center;
   font-size: 20px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .result-details {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin: 20px 0;
+  margin: 22px 0;
 }
 
 .result-item {
+  padding: 17px;
   background: rgba(255,255,255,0.1);
-  border-radius: 12px;
-  text-align: center;
-  padding: 15px;
+  border-radius: 14px;
+}
+
+.result-item h3 {
+  color: var(--gold);
+  font-size: 27px;
+  margin: 8px 0;
 }
 
 footer {
   text-align: center;
-  color: #c4b5fd;
   padding: 20px 5px;
   font-size: 13px;
+  color: #c4b5fd;
+  line-height: 1.7;
 }
 
 @media (max-width: 600px) {
   .wrap {
-    padding: 12px;
+    padding: 10px;
   }
 
   .panel {
@@ -274,8 +374,12 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .answer-btn {
-    min-height: 60px;
+  .answer {
+    min-height: 65px;
+  }
+
+  .mystery-icon {
+    font-size: 70px;
   }
 }
 </style>
@@ -283,52 +387,78 @@ footer {
 
 <body>
 
+<div id="cursor"></div>
+
 <div class="wrap">
 
 <header>
   <h1>🗝️ KOTAK MISTERI</h1>
-  <p>PERMAINAN SEJARAH TINGKATAN 3</p>
+  <p>PERMAINAN INTERAKTIF SEJARAH TINGKATAN 3</p>
 </header>
 
+<!-- PAPARAN MULA -->
+
 <section id="startScreen" class="panel">
+
   <div class="mystery-icon">📦</div>
 
-  <h2>Berani Bongkar Rahsia Sejarah?</h2>
+  <h2>Berani Membongkar Rahsia Sejarah?</h2>
 
   <p>
-    Jawab soalan sejarah, kumpul markah dan cabar diri
-    untuk membuka semua kotak misteri!
+    Uji pengetahuan Sejarah Tingkatan 3 melalui permainan
+    kotak misteri yang mencabar!
   </p>
 
-  <p>📝 20 soalan | ⏱️ 10 saat setiap soalan</p>
+  <div class="instructions">
+    <strong>📜 CARA BERMAIN</strong>
+
+    <ol>
+      <li>Jawab 20 soalan Sejarah.</li>
+      <li>Setiap soalan mempunyai masa 10 saat.</li>
+      <li>Jawapan betul akan mendapat markah.</li>
+      <li>Kumpulkan markah sebanyak mungkin.</li>
+      <li>
+        Gunakan tetikus atau skrin sentuh untuk memilih jawapan.
+      </li>
+      <li>
+        Jika menggunakan kamera, gerakkan tangan ke kotak jawapan
+        dan genggam tangan untuk memilihnya.
+      </li>
+    </ol>
+  </div>
 
   <button id="startBtn" class="primary">
     🚀 MULA PERMAINAN
   </button>
+
 </section>
+
+<!-- PAPARAN PERMAINAN -->
 
 <section id="gameScreen" class="hidden">
 
   <div class="hud">
+
     <div class="stat">
       <div class="stat-label">SOALAN</div>
-      <div class="stat-value" id="questionCount">0/20</div>
+      <div id="questionCount" class="stat-value">0/20</div>
     </div>
 
     <div class="stat">
       <div class="stat-label">MARKAH</div>
-      <div class="stat-value" id="score">0</div>
+      <div id="score" class="stat-value">0</div>
     </div>
 
     <div class="stat">
       <div class="stat-label">MASA</div>
-      <div class="stat-value" id="timer">10</div>
+      <div id="timer" class="stat-value">10</div>
     </div>
 
     <div class="stat">
       <div class="stat-label">STREAK 🔥</div>
-      <div class="stat-value" id="streak">0</div>
+      <div id="streak" class="stat-value">0</div>
     </div>
+
   </div>
 
   <div class="progress-track">
@@ -353,382 +483,992 @@ footer {
 
   </div>
 
+  <!-- KAWALAN GERAKAN TANGAN -->
+
   <div class="panel camera-panel">
 
-    <h3>🖐️ KAWALAN GERAKAN TANGAN</h3>
+    <h2>🖐️ KAWALAN GERAKAN TANGAN</h2>
 
-    <p class="camera-status" id="cameraStatus">
-      Kau boleh bermain menggunakan tetikus atau skrin sentuh.
-      Aktifkan kamera jika mahu mencuba kawalan gerakan tangan.
+    <p>
+      Aktifkan kamera untuk mencuba kawalan permainan
+      menggunakan pergerakan tangan.
     </p>
 
-    <video id="cameraVideo" autoplay playsinline></video>
+    <div class="camera-instructions">
 
-    <canvas id="cameraCanvas" width="640" height="480"></canvas>
+      <strong>CARA MENGGUNAKAN HAND GESTURE</strong>
 
-    <br><br>
+      <ol>
+        <li>Tekan butang aktifkan kamera.</li>
+        <li>Pastikan tangan kelihatan di hadapan kamera.</li>
+        <li>Gerakkan tangan ke arah kotak jawapan yang dikehendaki.</li>
+        <li>Genggam tangan untuk memilih jawapan.</li>
+        <li>
+          Jika kamera tidak berfungsi, gunakan tetikus atau
+          skrin sentuh sebagai alternatif.
+        </li>
+      </ol>
 
-    <button id="cameraBtn" class="secondary">
-      📷 AKTIFKAN KAMERA
-    </button>
+    </div>
 
-    <button id="stopCameraBtn" class="danger">
-      TUTUP KAMERA
-    </button>
+    <video
+      id="cameraVideo"
+      autoplay
+      playsinline
+      muted>
+    </video>
+
+    <canvas
+      id="cameraCanvas"
+      width="640"
+      height="480">
+    </canvas>
+
+    <p id="handStatus" aria-live="polite">
+      Kamera belum diaktifkan.
+    </p>
+
+    <div class="camera-buttons">
+
+      <button id="cameraBtn" class="secondary">
+        📷 AKTIFKAN KAMERA
+      </button>
+
+      <button id="stopCameraBtn" class="danger">
+        TUTUP KAMERA
+      </button>
+
+    </div>
 
   </div>
 
 </section>
 
+<!-- PAPARAN KEPUTUSAN -->
+
 <section id="resultScreen" class="panel hidden">
 
-  <h2 style="text-align:center;">
-    🏆 KEPUTUSAN PERMAINAN
-  </h2>
+  <div class="mystery-icon">🏆</div>
 
-  <div class="result-score" id="finalScore">0</div>
+  <h2>TAHNIAH! PERMAINAN SELESAI</h2>
 
-  <div class="result-message" id="resultMessage">
-    Tahniah kerana menyelesaikan permainan!
+  <div id="finalScore" class="result-score">0</div>
+
+  <div id="resultMessage" class="result-message">
+    Teruskan usaha untuk menguasai Sejarah!
   </div>
 
   <div class="result-details">
 
     <div class="result-item">
       <div>Jawapan Betul</div>
-      <h2 id="correctCount">0</h2>
+      <h3 id="correctCount">0</h3>
     </div>
 
     <div class="result-item">
       <div>Jawapan Salah</div>
-      <h2 id="wrongCount">0</h2>
+      <h3 id="wrongCount">0</h3>
     </div>
 
     <div class="result-item">
       <div>Ketepatan</div>
-      <h2 id="accuracy">0%</h2>
+      <h3 id="accuracy">0%</h3>
     </div>
 
     <div class="result-item">
       <div>Streak Terbaik 🔥</div>
-      <h2 id="bestStreak">0</h2>
+      <h3 id="bestStreak">0</h3>
     </div>
 
   </div>
 
-  <div style="text-align:center;">
-    <button id="restartBtn" class="primary">
-      🔄 MAIN SEMULA
-    </button>
-  </div>
+  <button id="restartBtn" class="primary">
+    🔄 MAIN SEMULA
+  </button>
 
 </section>
 
 <footer>
-  Bahan pembelajaran interaktif • Sejarah Tingkatan 3
+  KOTAK MISTERI SEJARAH TINGKATAN 3
+  <br>
+  Belajar Sejarah dengan cara yang menyeronokkan!
 </footer>
 
 </div>
 
 <script>
-const bank=[
-{chapter:"Bab 1 • Kedatangan Kuasa Barat",q:"Apakah tarikan utama Tanah Melayu kepada kuasa Barat?",o:["Industri pelancongan","Kekayaan hasil bumi","Industri perfileman","Teknologi moden"],a:1,e:"Kuasa Barat tertarik kepada hasil bumi dan bahan mentah untuk kepentingan ekonomi."},
-{chapter:"Bab 1 • Kedatangan Kuasa Barat",q:"Mengapakah kuasa Barat bersaing mendapatkan tanah jajahan?",o:["Menguasai perdagangan","Menyebarkan sukan","Membina sekolah sahaja","Menghapuskan perdagangan"],a:0,e:"Tanah jajahan membantu kuasa Barat menguasai perdagangan dan kepentingan ekonomi."},
-{chapter:"Bab 2 • Pentadbiran Negeri-negeri Selat",q:"Negeri manakah diperoleh British melalui Francis Light pada tahun 1786?",o:["Melaka","Singapura","Pulau Pinang","Johor"],a:2,e:"Francis Light mengambil Pulau Pinang bagi pihak Syarikat Hindia Timur Inggeris pada tahun 1786."},
-{chapter:"Bab 2 • Pentadbiran Negeri-negeri Selat",q:"Apakah tujuan British mendapatkan pelabuhan strategik?",o:["Mengembangkan perdagangan","Menghapuskan pertanian","Menutup laluan kapal","Mengurangkan perdagangan"],a:0,e:"Pelabuhan strategik menyokong perdagangan dan persinggahan kapal British."},
-{chapter:"Bab 3 • Negeri-negeri Melayu Bersekutu",q:"Negeri manakah merupakan anggota NNMB pada tahun 1896?",o:["Perak, Selangor, Negeri Sembilan dan Pahang","Kedah, Perlis, Kelantan dan Terengganu","Johor, Melaka, Kedah dan Perlis","Sabah, Sarawak, Perak dan Pahang"],a:0,e:"NNMB terdiri daripada Perak, Selangor, Negeri Sembilan dan Pahang."},
-{chapter:"Bab 3 • Negeri-negeri Melayu Bersekutu",q:"Siapakah yang mengetuai pentadbiran NNMB?",o:["Gabenor","Residen Jeneral","Ketua Anak Negeri","Sultan"],a:1,e:"Residen Jeneral menyelaraskan pentadbiran NNMB."},
-{chapter:"Bab 4 • Negeri-negeri Melayu Tidak Bersekutu",q:"Apakah peranan Penasihat British di negeri Melayu?",o:["Menjadi ketua agama Islam","Menasihati pemerintah negeri","Menghapuskan institusi raja","Menguruskan semua kampung"],a:1,e:"Penasihat British memberi nasihat dalam urusan pentadbiran negeri."},
-{chapter:"Bab 4 • Negeri-negeri Melayu Tidak Bersekutu",q:"Apakah status Johor selepas menerima perlindungan British pada tahun 1914?",o:["Tanah jajahan Belanda","Negeri di bawah perlindungan British","Wilayah Siam","Anggota NNMB"],a:1,e:"Johor menerima Penasihat British pada tahun 1914 dan berada di bawah pengaruh British."},
-{chapter:"Bab 5 • Pentadbiran Barat di Sarawak dan Sabah",q:"Siapakah pengasas pemerintahan keluarga Brooke di Sarawak?",o:["James Brooke","Charles Light","Stamford Raffles","Frank Swettenham"],a:0,e:"James Brooke memulakan pemerintahan keluarga Brooke di Sarawak pada tahun 1841."},
-{chapter:"Bab 5 • Pentadbiran Barat di Sarawak dan Sabah",q:"Syarikat manakah mentadbir Sabah pada akhir abad ke-19?",o:["Syarikat Hindia Timur Belanda","Syarikat Berpiagam Borneo Utara British","Syarikat Perdagangan Siam","Syarikat Hindia Timur Perancis"],a:1,e:"SBUB mentadbir Sabah selepas memperoleh piagam diraja British."},
-{chapter:"Bab 6 • Ekonomi dan Sosial",q:"Apakah contoh tanaman komersial yang berkembang di Tanah Melayu?",o:["Getah","Gandum","Barli","Kurma"],a:0,e:"Getah menjadi tanaman komersial penting dalam ekonomi eksport Tanah Melayu."},
-{chapter:"Bab 6 • Ekonomi dan Sosial",q:"Apakah kesan kemasukan buruh dari luar ke Tanah Melayu?",o:["Terbentuk masyarakat berbilang kaum","Institusi beraja dihapuskan","Perdagangan terhenti","Semua penduduk berpindah"],a:0,e:"Kemasukan buruh dari luar menyumbang kepada pembentukan masyarakat berbilang kaum."},
-{chapter:"Bab 6 • Ekonomi dan Sosial",q:"Apakah ciri pendidikan vernakular?",o:["Bahasa pengantar berbeza mengikut aliran sekolah","Semua sekolah menggunakan bahasa yang sama","Semua murid belajar di sekolah Inggeris","Sekolah hanya mengajar perlombongan"],a:0,e:"Sekolah vernakular menggunakan bahasa pengantar mengikut aliran seperti Melayu, Cina dan Tamil."},
-{chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Siapakah tokoh yang menentang British di Pahang?",o:["Dato' Bahaman","Rentap","Mat Salleh","Tok Janggut"],a:0,e:"Dato' Bahaman mengetuai penentangan terhadap British di Pahang."},
-{chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Apakah antara sebab Tok Janggut menentang British?",o:["Pelaksanaan cukai dan peraturan baharu","Pembukaan sekolah baharu","Pembinaan pelabuhan","Perkembangan tanaman getah"],a:0,e:"Penentangan Tok Janggut berkait dengan pelaksanaan cukai dan peraturan British di Pasir Puteh."},
-{chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Siapakah tokoh yang menentang British di Terengganu?",o:["Haji Abdul Rahman Limbong","Dato' Maharaja Lela","Rentap","Dol Said"],a:0,e:"Haji Abdul Rahman Limbong menentang peraturan tanah British di Terengganu."},
-{chapter:"Bab 7 • Penentangan Masyarakat Tempatan",q:"Mengapakah Rentap menentang James Brooke?",o:["Campur tangan Brooke terhadap masyarakat Iban","Pembukaan lombong bijih timah","Pendidikan vernakular","Pembentukan NNMB"],a:0,e:"Rentap menentang peluasan kuasa Brooke dan tindakannya terhadap masyarakat Iban."},
-{chapter:"Bab 8 • Cabaran Kuasa Barat",q:"Apakah strategi yang digunakan kuasa Barat untuk meluaskan pengaruh?",o:["Perjanjian dengan pemerintah tempatan","Menyerahkan semua kuasa","Menghentikan perdagangan","Menutup semua pelabuhan"],a:0,e:"Kuasa Barat menggunakan perjanjian dan tekanan politik untuk meluaskan pengaruh."},
-{chapter:"Bab 8 • Perjanjian Bangkok 1909",q:"Perjanjian Bangkok 1909 melibatkan British dengan kuasa manakah?",o:["Belanda","Siam","Perancis","Portugis"],a:1,e:"Perjanjian Bangkok 1909 dimeterai antara British dengan Siam."},
-{chapter:"Bab 8 • Perjanjian Bangkok 1909",q:"Antara berikut, negeri manakah menerima kesan Perjanjian Bangkok 1909?",o:["Perak dan Selangor","Johor dan Melaka","Kedah dan Kelantan","Sabah dan Sarawak"],a:2,e:"Perjanjian Bangkok 1909 melibatkan Kedah, Perlis, Kelantan dan Terengganu."}
+  // ==========================================
+// BANK SOALAN SEJARAH TINGKATAN 3
+// ==========================================
+
+const bank = [
+  {
+    q: "Apakah tujuan British memperkenalkan Sistem Residen di negeri Melayu?",
+    a: [
+      "Membantu raja mengukuhkan kuasa mutlak",
+      "Menguasai pentadbiran negeri Melayu",
+      "Memansuhkan semua undang-undang British",
+      "Memberikan kemerdekaan kepada negeri Melayu"
+    ],
+    c: 1,
+    e: "Sistem Residen membolehkan British campur tangan dalam pentadbiran negeri Melayu."
+  },
+  {
+    q: "Apakah tugas utama Residen British?",
+    a: [
+      "Menjadi ketua agama Islam",
+      "Mengetuai angkatan tentera Melayu",
+      "Menasihati sultan dalam pentadbiran kecuali hal agama Islam dan adat Melayu",
+      "Melantik semua ahli keluarga diraja"
+    ],
+    c: 2,
+    e: "Residen menasihati sultan dalam urusan pentadbiran kecuali hal agama Islam dan adat Melayu."
+  },
+  {
+    q: "Negeri manakah yang terlibat dalam Perjanjian Pangkor 1874?",
+    a: [
+      "Johor",
+      "Perak",
+      "Kelantan",
+      "Terengganu"
+    ],
+    c: 1,
+    e: "Perjanjian Pangkor 1874 membuka ruang kepada pelaksanaan Sistem Residen di Perak."
+  },
+  {
+    q: "Apakah faktor utama British berminat menguasai negeri-negeri Melayu?",
+    a: [
+      "Mengembangkan kegiatan perlombongan dan perdagangan",
+      "Membina kawasan pertanian untuk kegunaan sendiri sahaja",
+      "Menghapuskan semua pelabuhan",
+      "Menghentikan perdagangan antarabangsa"
+    ],
+    c: 0,
+    e: "Kekayaan sumber bijih timah dan kepentingan perdagangan menarik minat British."
+  },
+  {
+    q: "Apakah tujuan penubuhan Negeri-negeri Melayu Bersekutu pada tahun 1896?",
+    a: [
+      "Menyatukan semua negeri di Asia Tenggara",
+      "Mengukuhkan pentadbiran British di Perak, Selangor, Negeri Sembilan dan Pahang",
+      "Memberikan kemerdekaan kepada negeri Melayu",
+      "Menghapuskan sistem pemerintahan beraja"
+    ],
+    c: 1,
+    e: "Negeri-negeri Melayu Bersekutu terdiri daripada Perak, Selangor, Negeri Sembilan dan Pahang."
+  },
+  {
+    q: "Siapakah yang memperkenalkan Sistem Penasihat British di Johor?",
+    a: [
+      "Sultan Abu Bakar",
+      "Sultan Ibrahim",
+      "Sultan Abdullah",
+      "Dato' Maharaja Lela"
+    ],
+    c: 1,
+    e: "Sultan Ibrahim menerima Penasihat British di Johor pada tahun 1914."
+  },
+  {
+    q: "Apakah kepentingan Undang-Undang Tubuh Kerajaan Johor 1895?",
+    a: [
+      "Menghapuskan institusi kesultanan",
+      "Menetapkan peraturan bagi pentadbiran kerajaan Johor",
+      "Menyerahkan Johor kepada Siam",
+      "Menghapuskan semua jawatan pembesar"
+    ],
+    c: 1,
+    e: "Undang-undang tubuh membantu mengatur pentadbiran dan pemerintahan kerajaan Johor."
+  },
+  {
+    q: "Apakah matlamat utama Malayan Union yang diperkenalkan pada tahun 1946?",
+    a: [
+      "Menyatukan pentadbiran negeri-negeri Melayu di bawah satu kerajaan",
+      "Memberikan kuasa penuh kepada semua sultan",
+      "Menubuhkan Persekutuan Tanah Melayu pada tahun 1946",
+      "Menghapuskan pentadbiran British"
+    ],
+    c: 0,
+    e: "Malayan Union bertujuan menyatukan pentadbiran negeri-negeri Melayu dan Negeri-negeri Selat tertentu."
+  },
+  {
+    q: "Mengapakah orang Melayu menentang Malayan Union?",
+    a: [
+      "Bahasa Melayu dijadikan bahasa kebangsaan",
+      "Kuasa raja-raja Melayu terjejas dan syarat kerakyatan menjadi longgar",
+      "British memberikan kemerdekaan serta-merta",
+      "Semua sekolah Melayu ditutup"
+    ],
+    c: 1,
+    e: "Penentangan berlaku kerana Malayan Union menjejaskan kedudukan raja-raja Melayu dan mengubah syarat kerakyatan."
+  },
+  {
+    q: "Apakah hasil penentangan orang Melayu terhadap Malayan Union?",
+    a: [
+      "Malayan Union dikekalkan tanpa perubahan",
+      "British menyerahkan semua negeri kepada Siam",
+      "Malayan Union digantikan dengan Persekutuan Tanah Melayu pada tahun 1948",
+      "Semua pertubuhan Melayu dibubarkan"
+    ],
+    c: 2,
+    e: "Persekutuan Tanah Melayu ditubuhkan pada 1 Februari 1948 bagi menggantikan Malayan Union."
+  },
+  {
+    q: "Apakah tujuan penubuhan Persekutuan Tanah Melayu 1948?",
+    a: [
+      "Mengembalikan kedudukan raja-raja Melayu dan menyusun semula pentadbiran",
+      "Menghapuskan semua negeri Melayu",
+      "Menjadikan Tanah Melayu sebahagian daripada Siam",
+      "Menghentikan kegiatan ekonomi"
+    ],
+    c: 0,
+    e: "Persekutuan Tanah Melayu 1948 memulihkan kedudukan raja-raja Melayu dan mengubah struktur pentadbiran."
+  },
+  {
+    q: "Apakah maksud nasionalisme?",
+    a: [
+      "Perasaan cinta akan bangsa dan negara serta keinginan membebaskan negara daripada penjajahan",
+      "Keinginan menguasai negara lain",
+      "Penolakan terhadap semua bentuk pendidikan",
+      "Usaha menghapuskan identiti bangsa"
+    ],
+    c: 0,
+    e: "Nasionalisme merangkumi semangat cinta akan bangsa dan negara serta perjuangan menentukan nasib sendiri."
+  },
+  {
+    q: "Apakah peranan akhbar dalam perkembangan nasionalisme di Tanah Melayu?",
+    a: [
+      "Menyebarkan maklumat dan membangkitkan kesedaran masyarakat",
+      "Menghalang masyarakat membaca",
+      "Menghapuskan kegiatan penulisan",
+      "Menggantikan semua institusi pendidikan"
+    ],
+    c: 0,
+    e: "Akhbar dan majalah menjadi saluran menyampaikan idea pembaharuan serta kesedaran kebangsaan."
+  },
+  {
+    q: "Apakah tujuan penubuhan Kesatuan Melayu Muda (KMM)?",
+    a: [
+      "Menyokong penjajahan British tanpa syarat",
+      "Membangkitkan kesedaran politik dan memperjuangkan kepentingan bangsa Melayu",
+      "Menghapuskan semua pertubuhan politik",
+      "Menyerahkan Tanah Melayu kepada Belanda"
+    ],
+    c: 1,
+    e: "KMM merupakan antara pertubuhan awal yang memperjuangkan kesedaran politik orang Melayu."
+  },
+  {
+    q: "Apakah faktor kedatangan kuasa Barat ke negara kita?",
+    a: [
+      "Mendapatkan bahan mentah dan menguasai pasaran",
+      "Menghentikan semua perdagangan",
+      "Mengurangkan pengeluaran hasil bumi",
+      "Membubarkan semua pelabuhan"
+    ],
+    c: 0,
+    e: "Kuasa Barat berminat mendapatkan bahan mentah, pasaran dan peluang perdagangan."
+  },
+  {
+    q: "Apakah kepentingan bijih timah kepada ekonomi Tanah Melayu?",
+    a: [
+      "Menjadi bahan eksport yang penting",
+      "Menggantikan semua hasil pertanian",
+      "Menghapuskan perdagangan laut",
+      "Menghalang pembangunan bandar"
+    ],
+    c: 0,
+    e: "Bijih timah merupakan antara hasil eksport utama yang menyumbang kepada perkembangan ekonomi."
+  },
+  {
+    q: "Mengapakah pembinaan jalan raya dan landasan kereta api berkembang pada zaman British?",
+    a: [
+      "Memudahkan pengangkutan hasil ekonomi ke pelabuhan",
+      "Menghalang pergerakan hasil perlombongan",
+      "Menghapuskan hubungan antara bandar",
+      "Menggantikan semua kegiatan perdagangan"
+    ],
+    c: 0,
+    e: "Kemudahan pengangkutan membantu membawa hasil perlombongan dan pertanian ke pelabuhan."
+  },
+  {
+    q: "Apakah kepentingan pendidikan kepada perkembangan nasionalisme?",
+    a: [
+      "Melahirkan golongan berilmu yang mempunyai kesedaran tentang nasib bangsa",
+      "Menghalang perkembangan pemikiran",
+      "Menghapuskan penggunaan bahasa ibunda",
+      "Menghentikan semua kegiatan penulisan"
+    ],
+    c: 0,
+    e: "Pendidikan membantu melahirkan golongan yang menyedari kepentingan perubahan sosial dan politik."
+  },
+  {
+    q: "Apakah kepentingan perpaduan dalam perjuangan kemerdekaan?",
+    a: [
+      "Melemahkan kerjasama masyarakat",
+      "Memudahkan kuasa asing menguasai negara",
+      "Mengukuhkan kerjasama untuk mencapai matlamat bersama",
+      "Menghapuskan semangat cinta akan negara"
+    ],
+    c: 2,
+    e: "Perpaduan membolehkan masyarakat bekerjasama mencapai matlamat bersama."
+  },
+  {
+    q: "Apakah pengajaran yang boleh diambil daripada perjuangan tokoh tempatan menentang British?",
+    a: [
+      "Kita perlu mengabaikan sejarah negara",
+      "Kita hendaklah menghargai pengorbanan tokoh dan mempertahankan kedaulatan negara",
+      "Kita tidak perlu bekerjasama",
+      "Kita harus menyerahkan tanggungjawab kepada orang lain"
+    ],
+    c: 1,
+    e: "Pengorbanan tokoh tempatan mengajar kita supaya menghargai sejarah dan mempertahankan kedaulatan negara."
+  }
 ];
 
-let idx=0,score=0,correct=0,streak=0,left=10,timerId=null,locked=false,order=[],cameraStream=null,mpCamera=null,handReady=false,gestureTarget=null,gestureSince=0,lastGestureChoice=0;
+// ==========================================
+// PEMBOLEH UBAH PERMAINAN
+// ==========================================
 
-const $=id=>document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-function shuffle(a){
-a=a.slice();
-for(let i=a.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[a[i],a[j]]=[a[j],a[i]];
-}
-return a;
-}
+let questions = [];
+let current = 0;
+let score = 0;
+let correct = 0;
+let wrong = 0;
+let streak = 0;
+let bestStreak = 0;
+let timeLeft = 10;
+let timerInterval = null;
+let answered = false;
 
-function startGame(){
-clearInterval(timerId);
-idx=0;score=0;correct=0;streak=0;
-$('welcome').classList.add('hidden');
-$('result').classList.add('hidden');
-$('game').classList.remove('hidden');
-$('hud').classList.remove('hidden');
-$('cameraPanel').classList.remove('hidden');
-renderQuestion();
-}
+// Kawalan kamera dan gerakan tangan
+let cameraStream = null;
+let hands = null;
+let cameraActive = false;
+let handReady = false;
+let animationFrame = null;
+let lastGestureChoice = 0;
+let gestureTarget = null;
+let gestureCooldown = false;
 
-function renderQuestion(){
-if(idx>=bank.length){endGame();return}
-locked=false;
-left=10;
-const q=bank[idx];
+const canvas = $("cameraCanvas");
+const ctx = canvas.getContext("2d");
 
-$('counter').textContent=`Soalan ${idx+1} / ${bank.length}`;
-$('chapter').textContent=q.chapter;
-$('question').textContent=q.q;
-$('progress').style.width=`${idx/bank.length*100}%`;
-$('feedback').classList.add('hidden');
+// ==========================================
+// MULA DAN MULAKAN SEMULA
+// ==========================================
 
-order=shuffle([0,1,2,3]);
+$("startBtn").addEventListener("click", startGame);
+$("restartBtn").addEventListener("click", startGame);
+$("nextBtn").addEventListener("click", nextQuestion);
 
-document.querySelectorAll('.answer').forEach((b,i)=>{
-b.disabled=false;
-b.className='answer';
-b.querySelector('.letter').textContent='ABCD'[i];
-b.querySelector('.answerText').textContent=q.o[order[i]];
-b.onclick=()=>choose(i);
-});
+function startGame() {
+  clearInterval(timerInterval);
 
-updateHUD();
+  questions = [...bank].sort(() => Math.random() - 0.5);
 
-timerId=setInterval(()=>{
-left--;
-updateTimer();
-if(left<=0){
-clearInterval(timerId);
-choose(null);
-}
-},1000);
-}
+  current = 0;
+  score = 0;
+  correct = 0;
+  wrong = 0;
+  streak = 0;
+  bestStreak = 0;
 
-function updateHUD(){
-$('score').textContent=score;
-$('streak').textContent=streak+'x';
-updateTimer();
+  $("startScreen").classList.add("hidden");
+  $("resultScreen").classList.add("hidden");
+  $("gameScreen").classList.remove("hidden");
+
+  updateHUD();
+  showQuestion();
 }
 
-function updateTimer(){
-$('timer').textContent=left+'s';
-$('timer').style.color=left<=3?'#fb7185':'#fde047';
+function updateHUD() {
+  $("questionCount").textContent =
+    Math.min(current + 1, questions.length) + "/" + questions.length;
+
+  $("score").textContent = score;
+  $("streak").textContent = streak;
+
+  $("progressBar").style.width =
+    (current / questions.length * 100) + "%";
 }
 
-function choose(boxIndex){
-if(locked)return;
-locked=true;
-clearInterval(timerId);
+// ==========================================
+// PAPAR SOALAN
+// ==========================================
 
-const q=bank[idx];
-const correctBox=order.indexOf(q.a);
-const chosen=boxIndex===null?-1:order[boxIndex];
-const isCorrect=chosen===q.a;
+function showQuestion() {
+  clearInterval(timerInterval);
 
-document.querySelectorAll('.answer').forEach((b,i)=>{
-b.disabled=true;
-if(i===correctBox)b.classList.add('correct');
-else if(i===boxIndex&&!isCorrect)b.classList.add('wrong');
-});
+  if (current >= questions.length) {
+    finishGame();
+    return;
+  }
 
-if(isCorrect){
-correct++;
-streak++;
-score+=100+left*5+streak*10;
-$('feedbackTitle').textContent='✅ Betul!';
-$('feedbackTitle').style.color='#6ee7b7';
-}else{
-streak=0;
-$('feedbackTitle').textContent=boxIndex===null?'⏰ Masa tamat!':'❌ Belum tepat';
-$('feedbackTitle').style.color='#fda4af';
+  answered = false;
+  gestureTarget = null;
+  gestureCooldown = false;
+
+  const q = questions[current];
+
+  $("questionNumber").textContent =
+    "SOALAN " + (current + 1) + " DARIPADA " + questions.length;
+
+  $("questionText").textContent = q.q;
+
+  $("feedback").classList.add("hidden");
+  $("nextBtn").classList.add("hidden");
+
+  $("answers").innerHTML = "";
+
+  q.a.forEach((answer, index) => {
+    const button = document.createElement("button");
+
+    button.className = "answer";
+    button.dataset.box = index;
+
+    const letter = document.createElement("span");
+    letter.className = "letter";
+    letter.textContent = "ABCD"[index];
+
+    const text = document.createElement("span");
+    text.textContent = answer;
+
+    button.appendChild(letter);
+    button.appendChild(text);
+
+    button.addEventListener("click", () => choose(index));
+
+    $("answers").appendChild(button);
+  });
+
+  timeLeft = 10;
+  $("timer").textContent = timeLeft;
+
+  updateHUD();
+  startTimer();
 }
 
-$('feedbackText').textContent=`Jawapan: ${'ABCD'[correctBox]}. ${q.o[q.a]}. ${q.e}`;
-$('feedback').classList.remove('hidden');
-updateHUD();
+// ==========================================
+// PEMASA 10 SAAT
+// ==========================================
+
+function startTimer() {
+  clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    if (answered) {
+      clearInterval(timerInterval);
+      return;
+    }
+
+    timeLeft--;
+    $("timer").textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeOut();
+    }
+  }, 1000);
 }
 
-function nextQuestion(){
-idx++;
-renderQuestion();
+function timeOut() {
+  if (answered) return;
+
+  answered = true;
+  wrong++;
+  streak = 0;
+
+  showCorrectAnswer();
+
+  $("feedback").classList.remove("hidden");
+  $("feedback").textContent =
+    "⏰ Masa tamat! " + questions[current].e;
+
+  $("nextBtn").classList.remove("hidden");
+  $("nextBtn").textContent =
+    current === questions.length - 1
+      ? "LIHAT KEPUTUSAN 🏆"
+      : "SOALAN SETERUSNYA ➜";
+
+  updateHUD();
 }
 
-function endGame(){
-clearInterval(timerId);
-$('game').classList.add('hidden');
-$('hud').classList.add('hidden');
-$('result').classList.remove('hidden');
-$('resScore').textContent=score;
-$('resCorrect').textContent=`${correct} / ${bank.length}`;
+// ==========================================
+// SEMAK JAWAPAN
+// ==========================================
 
-let p=Math.round(correct/bank.length*100);
-$('resAccuracy').textContent=p+'%';
-$('resGrade').textContent=p>=80?'Cemerlang':p>=60?'Baik':'Terus berusaha';
-$('resMessage').textContent=p>=80?'Tahniah! Penguasaan kamu sangat baik!':p>=60?'Bagus! Teruskan ulang kaji.':'Jangan putus asa. Cuba lagi!';
+function choose(index) {
+  if (answered) return;
+
+  answered = true;
+  clearInterval(timerInterval);
+
+  const q = questions[current];
+  const buttons = document.querySelectorAll(".answer");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (index === q.c) {
+    correct++;
+    streak++;
+    bestStreak = Math.max(bestStreak, streak);
+
+    score += 10;
+
+    $("feedback").textContent =
+      "✅ BETUL! +10 MARKAH\n\n" + q.e;
+
+    $("feedback").style.border =
+      "2px solid #22c55e";
+
+    buttons[index].classList.add("correct");
+  } else {
+    wrong++;
+    streak = 0;
+
+    $("feedback").textContent =
+      "❌ KURANG TEPAT!\n\n" +
+      "Jawapan yang betul: " + q.a[q.c] +
+      "\n\n" + q.e;
+
+    $("feedback").style.border =
+      "2px solid #f43f5e";
+
+    buttons[index].classList.add("wrong");
+    buttons[q.c].classList.add("correct");
+  }
+
+  $("feedback").classList.remove("hidden");
+
+  $("nextBtn").classList.remove("hidden");
+  $("nextBtn").textContent =
+    current === questions.length - 1
+      ? "LIHAT KEPUTUSAN 🏆"
+      : "SOALAN SETERUSNYA ➜";
+
+  $("progressBar").style.width =
+    ((current + 1) / questions.length * 100) + "%";
+
+  updateHUD();
 }
 
-function home(){
-clearInterval(timerId);
-$('game').classList.add('hidden');
-$('result').classList.add('hidden');
-$('hud').classList.add('hidden');
-$('cameraPanel').classList.add('hidden');
-$('welcome').classList.remove('hidden');
+function showCorrectAnswer() {
+  const q = questions[current];
+  const buttons = document.querySelectorAll(".answer");
+
+  buttons.forEach((button, index) => {
+    button.disabled = true;
+
+    if (index === q.c) {
+      button.classList.add("correct");
+    }
+  });
+
+  $("feedback").style.border = "2px solid #f43f5e";
 }
 
-async function enableCamera(){
-const status=$('handStatus');
+function nextQuestion() {
+  if (!answered) return;
 
-if(!window.Hands||!window.Camera){
-status.textContent='Pustaka hand gesture tidak berjaya dimuatkan. Guna tetikus/sentuh atau cuba sambungan internet lain.';
-return;
+  current++;
+
+  if (current >= questions.length) {
+    finishGame();
+  } else {
+    showQuestion();
+  }
 }
 
-try{
-disableCamera(false);
+// ==========================================
+// PAPAR KEPUTUSAN
+// ==========================================
 
-const video=$('video');
-cameraStream=await navigator.mediaDevices.getUserMedia({
-video:{facingMode:'user',width:640,height:480},
-audio:false
-});
+function finishGame() {
+  clearInterval(timerInterval);
 
-video.srcObject=cameraStream;
-await video.play();
+  $("gameScreen").classList.add("hidden");
+  $("resultScreen").classList.remove("hidden");
 
-const hands=new Hands({
-locateFile:(file)=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-});
+  $("finalScore").textContent = score + " MARKAH";
+  $("correctCount").textContent = correct;
+  $("wrongCount").textContent = wrong;
 
-hands.setOptions({
-maxNumHands:1,
-modelComplexity:1,
-minDetectionConfidence:.65,
-minTrackingConfidence:.6
-});
+  const accuracy = Math.round(
+    correct / questions.length * 100
+  );
 
-hands.onResults(onHandResults);
+  $("accuracy").textContent = accuracy + "%";
+  $("bestStreak").textContent = bestStreak;
 
-mpCamera=new Camera(video,{
-onFrame:async()=>{
-if(mpCamera)await hands.send({image:video});
-},
-width:640,
-height:480
-});
+  let message = "";
 
-await mpCamera.start();
-handReady=true;
+  if (accuracy >= 90) {
+    message = "🌟 Cemerlang! Penguasaan Sejarah anda sangat baik!";
+  } else if (accuracy >= 70) {
+    message = "👏 Bagus! Teruskan usaha untuk mencapai keputusan lebih baik!";
+  } else if (accuracy >= 50) {
+    message = "💪 Usaha yang baik! Ulang kaji lagi untuk meningkatkan markah.";
+  } else {
+    message = "📚 Jangan putus asa! Teruskan ulang kaji dan cuba lagi.";
+  }
 
-status.textContent='Kamera aktif. Halakan jari telunjuk ke kotak jawapan dan tahan 1 saat.';
-$('mode').textContent='🖐️ Hand gesture aktif';
+  $("resultMessage").textContent = message;
 
-}catch(err){
-status.textContent='Kamera gagal dibuka. Benarkan akses kamera dan pastikan laman dibuka melalui HTTPS. Tetikus/sentuh masih boleh digunakan.';
-disableCamera(false);
-}
+  $("progressBar").style.width = "100%";
 }
 
-function disableCamera(update=true){
-handReady=false;
-gestureTarget=null;
+// ==========================================
+// KAWALAN KAMERA
+// ==========================================
 
-if(mpCamera){
-try{mpCamera.stop()}catch(e){}
-mpCamera=null;
+$("cameraBtn").addEventListener("click", enableCamera);
+$("stopCameraBtn").addEventListener("click", disableCamera);
+
+async function enableCamera() {
+  if (cameraActive) return;
+
+  if (!navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia) {
+    $("handStatus").textContent =
+      "Pelayar ini tidak menyokong kamera. Gunakan Chrome atau Safari melalui HTTPS.";
+    return;
+  }
+
+  try {
+    $("handStatus").textContent =
+      "Sedang mengaktifkan kamera...";
+
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      },
+      audio: false
+    });
+
+    $("cameraVideo").srcObject = cameraStream;
+
+    await $("cameraVideo").play();
+
+    cameraActive = true;
+
+    $("handStatus").textContent =
+      "Kamera aktif. Sedang memuatkan pengesanan tangan...";
+
+    await loadHandTracking();
+
+  } catch (error) {
+    $("handStatus").textContent =
+      "Kamera gagal diaktifkan. Pastikan kebenaran kamera diberikan dan laman dibuka menggunakan HTTPS. Ralat: " +
+      error.message;
+  }
 }
 
-if(cameraStream){
-cameraStream.getTracks().forEach(t=>t.stop());
-cameraStream=null;
+// ==========================================
+// MUATKAN MEDIAPIPE HANDS
+// ==========================================
+
+async function loadHandTracking() {
+  if (typeof Hands === "undefined") {
+    await loadScript(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"
+    );
+  }
+
+  if (typeof Camera === "undefined") {
+    await loadScript(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
+    );
+  }
+
+  hands = new Hands({
+    locateFile: file =>
+      "https://cdn.jsdelivr.net/npm/@mediapipe/hands/" + file
+  });
+
+  hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.65,
+    minTrackingConfidence: 0.6
+  });
+
+  hands.onResults(onHandResults);
+
+  handReady = true;
+
+  $("handStatus").textContent =
+    "Pengesanan tangan sedia. Tunjukkan tangan di hadapan kamera.";
+
+  processCameraFrame();
 }
 
-$('video').srcObject=null;
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
 
-if(update){
-$('handStatus').textContent='Kamera dimatikan. Tetikus/sentuh masih boleh digunakan.';
-$('mode').textContent='🖱️ Tetikus / sentuh';
-}
-}
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = () =>
+      reject(new Error("Gagal memuatkan pustaka pengesanan tangan."));
 
-function onHandResults(results){
-if(!handReady)return;
-
-const status=$('handStatus');
-const cursor=$('cursor');
-
-if(!results.multiHandLandmarks||!results.multiHandLandmarks.length){
-status.textContent='Tangan belum dikesan. Letakkan tangan dalam pandangan kamera.';
-cursor.style.display='none';
-gestureTarget=null;
-return;
+    document.head.appendChild(script);
+  });
 }
 
-const lm=results.multiHandLandmarks[0];
+// ==========================================
+// PENGESANAN GERAKAN TANGAN
+// ==========================================
 
-// Titik hujung jari telunjuk ialah landmark 8.
-const x=1-lm[8].x;
-const y=lm[8].y;
+async function processCameraFrame() {
+  if (!cameraActive || !hands) return;
 
-cursor.style.display='block';
-cursor.style.left=(x*window.innerWidth)+'px';
-cursor.style.top=(y*window.innerHeight)+'px';
+  if ($("cameraVideo").readyState >= 2) {
+    try {
+      await hands.send({
+        image: $("cameraVideo")
+      });
+    } catch (error) {
+      console.error("Hand tracking error:", error);
+    }
+  }
 
-const indexUp=lm[8].y<lm[6].y;
-const middleDown=lm[12].y>lm[10].y;
-const ringDown=lm[16].y>lm[14].y;
-const pinkyDown=lm[20].y>lm[18].y;
-
-if(!(indexUp&&middleDown&&ringDown&&pinkyDown)){
-status.textContent='Tunjuk jari telunjuk sahaja ke arah kotak jawapan.';
-gestureTarget=null;
-return;
+  if (cameraActive) {
+    animationFrame = requestAnimationFrame(processCameraFrame);
+  }
 }
 
-const el=document.elementFromPoint(
-x*window.innerWidth,
-y*window.innerHeight
-);
+function onHandResults(results) {
+  if (!cameraActive) return;
 
-const btn=el&&el.closest?el.closest('.answer'):null;
+  const video = $("cameraVideo");
 
-if(!btn||btn.disabled){
-status.textContent='Gerakkan titik kuning ke atas salah satu kotak jawapan.';
-gestureTarget=null;
-return;
+  ctx.save();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+
+  if (video.readyState >= 2) {
+    ctx.drawImage(
+      video,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+  }
+
+  ctx.restore();
+
+  const landmarks =
+    results.multiHandLandmarks &&
+    results.multiHandLandmarks.length
+      ? results.multiHandLandmarks[0]
+      : null;
+
+  if (!landmarks) {
+    $("handStatus").textContent =
+      "Tangan tidak dikesan. Pastikan tangan kelihatan sepenuhnya.";
+
+    $("cursor").style.display = "none";
+    gestureTarget = null;
+    return;
+  }
+
+  // Lukis titik tangan pada paparan kamera
+  drawHand(landmarks);
+
+  // Gunakan titik tengah tapak tangan untuk mengawal kursor
+  const palmX = 1 - landmarks[9].x;
+  const palmY = landmarks[9].y;
+
+  const screenX = palmX * window.innerWidth;
+  const screenY = palmY * window.innerHeight;
+
+  const cursor = $("cursor");
+
+  cursor.style.display = "block";
+  cursor.style.left = screenX + "px";
+  cursor.style.top = screenY + "px";
+
+  // Kesan jari yang dilipat
+  const indexFolded =
+    landmarks[8].y > landmarks[6].y;
+
+  const middleFolded =
+    landmarks[12].y > landmarks[10].y;
+
+  const ringFolded =
+    landmarks[16].y > landmarks[14].y;
+
+  const pinkyFolded =
+    landmarks[20].y > landmarks[18].y;
+
+  const thumbNearPalm =
+    Math.hypot(
+      landmarks[4].x - landmarks[9].x,
+      landmarks[4].y - landmarks[9].y
+    ) < 0.22;
+
+  const isFist =
+    indexFolded &&
+    middleFolded &&
+    ringFolded &&
+    pinkyFolded &&
+    thumbNearPalm;
+
+  const element = document.elementFromPoint(
+    screenX,
+    screenY
+  );
+
+  const button =
+    element && element.closest
+      ? element.closest(".answer")
+      : null;
+
+  if (!button || button.disabled || answered) {
+    $("handStatus").textContent =
+      "Gerakkan tapak tangan ke arah salah satu kotak jawapan.";
+
+    gestureTarget = null;
+    return;
+  }
+
+  const box = Number(button.dataset.box);
+
+  // Tangan terbuka: sasarkan jawapan
+  if (!isFist) {
+    gestureTarget = box;
+
+    document.querySelectorAll(".answer").forEach(btn => {
+      btn.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+
+    $("handStatus").textContent =
+      "Sasaran jawapan " + "ABCD"[box] +
+      ". Genggam tangan untuk memilih! ✊";
+
+    return;
+  }
+
+  // Tangan digenggam: pilih jawapan sasaran
+  if (gestureTarget !== box) {
+    gestureTarget = box;
+    return;
+  }
+
+  const now = Date.now();
+
+  if (gestureCooldown || now - lastGestureChoice < 1600) {
+    return;
+  }
+
+  gestureCooldown = true;
+  lastGestureChoice = now;
+
+  $("handStatus").textContent =
+    "Genggaman dikesan! Memilih jawapan " + "ABCD"[box] + "...";
+
+  choose(box);
+
+  setTimeout(() => {
+    gestureCooldown = false;
+  }, 1600);
 }
 
-const n=Number(btn.dataset.box);
-const now=Date.now();
+// ==========================================
+// LUKIS TITIK PADA TANGAN
+// ==========================================
 
-if(gestureTarget!==n){
-gestureTarget=n;
-gestureSince=now;
-status.textContent='Kekalkan jari pada kotak '+('ABCD'[n])+'...';
-return;
+function drawHand(landmarks) {
+  const connections = [
+    [0,1],[1,2],[2,3],[3,4],
+    [0,5],[5,6],[6,7],[7,8],
+    [5,9],[9,10],[10,11],[11,12],
+    [9,13],[13,14],[14,15],[15,16],
+    [13,17],[17,18],[18,19],[19,20],
+    [0,17]
+  ];
+
+  ctx.save();
+
+  ctx.strokeStyle = "#ffe66d";
+  ctx.lineWidth = 4;
+
+  connections.forEach(([a,b]) => {
+    const x1 = (1 - landmarks[a].x) * canvas.width;
+    const y1 = landmarks[a].y * canvas.height;
+
+    const x2 = (1 - landmarks[b].x) * canvas.width;
+    const y2 = landmarks[b].y * canvas.height;
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  });
+
+  landmarks.forEach(point => {
+    const x = (1 - point.x) * canvas.width;
+    const y = point.y * canvas.height;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+
+    ctx.fillStyle = "#34d399";
+    ctx.fill();
+  });
+
+  ctx.restore();
 }
 
-const held=now-gestureSince;
-status.textContent='Kotak '+('ABCD'[n])+' • tahan '+Math.min(100,Math.round(held/10))+'%';
+// ==========================================
+// TUTUP KAMERA
+// ==========================================
 
-if(held>1000&&now-lastGestureChoice>1500){
-lastGestureChoice=now;
-choose(n);
-status.textContent='Jawapan dipilih: '+('ABCD'[n])+'.';
-gestureTarget=null;
+function disableCamera() {
+  cameraActive = false;
+  handReady = false;
+
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame);
+    animationFrame = null;
+  }
+
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+
+  if ($("cameraVideo")) {
+    $("cameraVideo").srcObject = null;
+  }
+
+  $("cursor").style.display = "none";
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  $("handStatus").textContent =
+    "Kamera ditutup. Anda boleh bermain menggunakan tetikus atau skrin sentuh.";
+
+  if (hands) {
+    try {
+      hands.close();
+    } catch (error) {
+      console.log(error);
+    }
+
+    hands = null;
+  }
 }
-}
 
-window.addEventListener('beforeunload',()=>disableCamera(false));
-</script>
-</body>
-</html>
-
+// Tutup kamera apabila pengguna meninggalkan halaman
+window.addEventListener("beforeunload", disableCamera);
